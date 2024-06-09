@@ -1,6 +1,6 @@
 ---
 permalink: /non-menu-page/
-title: "Page not in menu"
+title: "Random Baloo Image"
 author_profile: true
 redirect_from: 
   - "/nmp/"
@@ -9,8 +9,6 @@ redirect_from:
 
 <!-- This is a page not in the menu. You can use markdown in this page. -->
 
-Baloo
-======
 
 <div id="random-photo-container"></div>
 <script>
@@ -39,7 +37,6 @@ Baloo
         var container = document.getElementById('random-photo-container');
         container.innerHTML = '<img src="' + selectedPhoto + '" alt="Oops, something went wrong - please try again!">';
     }
-
-    // Call the function when the page loads
     window.addEventListener('load', displayRandomPhoto);
+    
 </script>
