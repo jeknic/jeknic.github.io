@@ -11,13 +11,25 @@ redirect_from:
 
 Education
 ======
-* Ph.D in Version Control Theory, GitHub University, 2018 (expected)
-* M.S. in Jekyll, GitHub University, 2014
-* B.S. in GitHub, GitHub University, 2012
+* Ph.D in Computational Linguistics, Saarland University, Jun 2024 - Present
+* M.Sc. in Language Science and Technology, Saarland University, Oct 2020 - May 2024
+* B.A. in English linguistics and literature, Univeristy of Belgrade, Oct 2016 - Jun 2020
 
 Work experience
 ======
-* Spring 2024: Academic Pages Collaborator
+ToDo
+
+* Nov 2023 - May 2024: Industrial Data Science Internship
+  * AUDI AG; Ingolstadt, DE
+  * Tasks include: entity extraction from production line plans using a hybrid LLM- and rule-based approach
+  <!-- * Supervisors: Dr. Ralph Hensel-Unger, Thomas Mayr -->
+
+* UdS #1
+
+* UdS #2
+
+
+<!-- * Spring 2024: Academic Pages Collaborator
   * Github University
   * Duties includes: Updates and improvements to template
   * Supervisor: The Users
@@ -30,9 +42,9 @@ Work experience
 * Summer 2015: Research Assistant
   * Github University
   * Duties included: Tagging issues
-  * Supervisor: Professor Git
+  * Supervisor: Professor Git -->
   
-Skills
+<!-- Skills
 ======
 * Skill 1
 * Skill 2
@@ -61,4 +73,4 @@ Teaching
   
 Service and leadership
 ======
-* Currently signed in to 43 different slack teams
+* Currently signed in to 43 different slack teams -->
