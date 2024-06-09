@@ -19,8 +19,6 @@ My research interests include: (TBD)
   - (ethics in artificial intelligence)
 
 
-<!-- ⚠︎ I have a dog named Baloo! (click [here](https://jeknic.github.io/nmp) for a random picture of him :D) -->
-
 ⚠︎ I have a dog named Baloo! (click [here](#) for a random picture of him :D)
 
 <div id="random-photo-container"></div>
