@@ -1,25 +1,30 @@
 ---
 permalink: /
-title: "Welcome!"
+title: ""
 author_profile: true
 redirect_from: 
   - /about/
   - /about.html
 ---
-(under construction)
 
+<!-- TODO : page width? -->
+
+*(under construction)*
+
+<span style="font-size: 15px"> 
 Hi, I'm Isidora - a first-year PhD student at [Saarland University](https://www.uni-saarland.de/en/home.html). I am part of the [Computational Linguistics](https://www.coli.uni-saarland.de/groups/AK/) research group, and my advisor is [Prof. Dr. Alexander Koller](https://www.coli.uni-saarland.de/~koller/#).
 
-My research focuses on adaptation in dialogue, and (TBD).
+<span style="font-size: 15px">  My research focuses on adaptation in dialogue, and (TBD). </span>
 
-My research interests include: (TBD)
-  - adaptation in dialogue
-  - dialogue agents
-  - large language models
-  - (ethics in artificial intelligence)
+<span style="font-size: 15px">  My research interests include: (TBD) </span><br>
+  <span style="font-size: 15px">  - adaptation in dialogue </span><br>
+<span style="font-size: 15px">   - dialogue agents </span><br>
+  <span style="font-size: 15px">  - large language models </span><br>
+<span style="font-size: 15px">  - (ethics in artificial intelligence) </span>
 
-
+<span style="font-size: 15px"> 
 ⚠︎ I have a dog named Baloo! (click [here](#) for a random picture of him :D)
+</span>
 
 <div id="random-photo-container"></div>
 
