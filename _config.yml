@@ -8,8 +8,8 @@
 
 # Basic Site Settings
 locale                   : "en-US"
-title                    : "❀   Isidora Jeknić   ❀"
-title_separator          : "-"
+title                    : "Isidora Jeknić"
+title_separator          : "❀"
 name                     : &name "Isidora Jeknić"
 description              : &description "personal description"
 url                      : https://jeknic.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
@@ -23,9 +23,9 @@ author:
   # Biographic information
   avatar           : "isi.png"
   name             : "Isidora Jeknić"
-  pronouns         : "she/her"  
+  pronouns         : # "she/her"  
   bio              : "PhD Candidate @ UdS"
-  location         : "Saarbrücken, Germany"
+  location         : "Saarbrücken, DE"
   employer         : "Saarland University"
   uri              : # URL
   email            : "jeknic@lst.uni-saarland.de" 
