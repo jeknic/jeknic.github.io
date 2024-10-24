@@ -9,18 +9,18 @@ redirect_from:
 
 <!-- TODO : page width? -->
 
-*(under construction)*
+<!-- *(under construction)* -->
 
 <span style="font-size: 15px"> 
-Hi, I'm Isidora - a first-year PhD student at [Saarland University](https://www.uni-saarland.de/en/home.html). I am part of the [Computational Linguistics](https://www.coli.uni-saarland.de/groups/AK/) research group, and my advisor is [Prof. Dr. Alexander Koller](https://www.coli.uni-saarland.de/~koller/#).
+Hi, I'm Isidora - a first-year PhD student at [Saarland University](https://www.uni-saarland.de/en/home.html). I am part of the [Computational Linguistics](https://www.coli.uni-saarland.de/groups/AK/) research group, and my advisor is [Prof. Dr. Alexander Koller](https://www.coli.uni-saarland.de/~koller/#). My work focuses on building and testing dialogue agents in collaborative interractive game environments.
 
-<span style="font-size: 15px">  My research focuses on adaptation in dialogue, and (TBD). </span>
-
-<span style="font-size: 15px">  My research interests include: (TBD) </span><br>
-  <span style="font-size: 15px">  - adaptation in dialogue </span><br>
+<span style="font-size: 15px">  My research interests include: </span><br>
+<span style="font-size: 15px">   - human-agent collaboration </span><br>
 <span style="font-size: 15px">   - dialogue agents </span><br>
-  <span style="font-size: 15px">  - large language models </span><br>
-<span style="font-size: 15px">  - (ethics in artificial intelligence) </span>
+<span style="font-size: 15px">   - collaborative problem-solving </span><br>
+<span style="font-size: 15px">   - adaptation in dialogue </span><br>
+<span style="font-size: 15px">   - building interactive collaborative environments </span><br>
+<!-- <span style="font-size: 15px">  - (ethics in artificial intelligence) </span> -->
 
 <span style="font-size: 15px"> 
 ⚠︎ I have a dog named Baloo! (click [here](#) for a random picture of him :D)
