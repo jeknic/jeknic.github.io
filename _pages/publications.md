@@ -4,6 +4,16 @@ title: "Publications"
 permalink: /publications/
 author_profile: true
 ---
+<span style="font-size: 25px"> <strong> 2025 </strong></span>
+<!-- ## 2025 -->
+
+<ul  style="font-size: 15px">
+    <li>
+        <a><strong>Collaborative Problem-Solving in an Optimization Game</strong></a><br>
+        <em><strong>Isidora Jeknić</strong>, Alex Duchnowski and Alexander Koller</em><br>
+        Under review.
+    </li>
+</ul>
 
 <span style="font-size: 25px"> <strong> 2024 </strong></span>
 <!-- ## 2024 -->
