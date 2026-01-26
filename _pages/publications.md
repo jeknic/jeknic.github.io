@@ -9,7 +9,7 @@ author_profile: true
 
 <ul  style="font-size: 15px">
     <li>
-        <a href="https://arxiv.org/abs/2505.15490"><strong>Collaborative Problem-Solving in an Optimization Game</strong></a><br>
+        <a href="https://aclanthology.org/2025.sigdial-1.58/"><strong>Collaborative Problem-Solving in an Optimization Game</strong></a><br>
         <em><strong>Isidora Jeknić</strong>, Alex Duchnowski and Alexander Koller</em><br>
         Proceedings of the 26th Annual Meeting of the Special Interest Group on Discourse and Dialogue, Avignon, France.
     </li>
