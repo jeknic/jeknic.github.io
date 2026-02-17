@@ -7,12 +7,8 @@ redirect_from:
   - /about.html
 ---
 
-<!-- TODO : page width? -->
-
-<!-- *(under construction)* -->
-
 <span style="font-size: 15px"> 
-Hi, I'm Isidora - a first-year PhD student at [Saarland University](https://www.uni-saarland.de/en/home.html). I am part of the [Computational Linguistics](https://www.coli.uni-saarland.de/groups/AK/) research group, and my advisor is [Prof. Dr. Alexander Koller](https://www.coli.uni-saarland.de/~koller/#). My work focuses on building and testing dialogue agents in collaborative interractive game environments.
+Hi, I'm Isidora - a second-year PhD student at [Saarland University](https://www.uni-saarland.de/en/home.html). I am part of the [Computational Linguistics](https://www.coli.uni-saarland.de/groups/AK/) research group, and my advisor is [Prof. Dr. Alexander Koller](https://www.coli.uni-saarland.de/~koller/#). My work focuses on building and testing dialogue agents in collaborative interractive game environments.
 
 <span style="font-size: 15px">  My research interests include: </span><br>
 <span style="font-size: 15px">   - human-agent collaboration </span><br>
