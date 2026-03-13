@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dialog Visualizer</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  /* Dark theme (default) */
+  --bg:           #0f1117;
+  --bg-surface:   #181c27;
+  --bg-raised:    #1e2433;
+  --border:       #2a3044;
+  --border-light: #323a52;
+  --text:         #e8eaf0;
+  --text-dim:     #8892a8;
+  --text-muted:   #4f5a72;
+  --blue:         #4a7fff;
+  --green:        #3ecf8e;
+  --orange:       #f4a261;
+  --purple:       #9b8fff;
+  --pink:         #ff8fab;
+  --blue-bg:      rgba(74,127,255,0.07);
+  --green-bg:     rgba(62,207,142,0.07);
+  --orange-bg:    rgba(244,162,97,0.07);
+  --blue-border:  rgba(74,127,255,0.3);
+  --green-border: rgba(62,207,142,0.3);
+  --orange-border:rgba(244,162,97,0.3);
+  --text-utt:     #c9d1e8;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --r: 8px;
+  --header-bg:    rgba(15,17,23,0.92);
+}
+
+:root.light {
+  --bg:           #f0f2f7;
+  --bg-surface:   #ffffff;
+  --bg-raised:    #e8ebf4;
+  --border:       #c8cdde;
+  --border-light: #a8afc4;
+  --text:         #0d0f1a;
+  --text-dim:     #2d3248;
+  --text-muted:   #6b7291;
+  --text-utt:     #111420;
+  --blue:         #1a4fd6;
+  --green:        #057a52;
+  --orange:       #b85c00;
+  --purple:       #5b1fd1;
+  --pink:         #b81865;
+  --blue-bg:      rgba(26,79,214,0.09);
+  --green-bg:     rgba(5,122,82,0.09);
+  --orange-bg:    rgba(184,92,0,0.09);
+  --blue-border:  rgba(26,79,214,0.35);
+  --green-border: rgba(5,122,82,0.35);
+  --orange-border:rgba(184,92,0,0.35);
+  --header-bg:    rgba(240,242,247,0.95);
+}
+
+html,body { min-height:100vh; background:var(--bg); color:var(--text);
+  font-family:var(--sans); font-size:14px; line-height:1.6;
+  -webkit-font-smoothing:antialiased; }
+
+/* ── Header ── */
+#header {
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; gap:16px;
+  padding:10px 32px;
+  background:var(--header-bg);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(8px);
+}
+#header h1 { font-family:var(--mono); font-size:13px; font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase; }
+#header h1 span { color:var(--blue); }
+#toolbar { display:flex; align-items:center; gap:8px; margin-left:auto; }
+#fname { font-family:var(--mono); font-size:11px; color:var(--text-muted); margin-right:8px; }
+.tbtn {
+  font-family:var(--mono); font-size:11px; font-weight:500;
+  padding:5px 12px; border-radius:4px;
+  border:1px solid var(--border-light);
+  background:var(--bg-raised); color:var(--text-dim);
+  cursor:pointer; transition:all .15s;
+}
+.tbtn:hover { background:var(--bg-raised); color:var(--text); border-color:var(--text-muted); }
+#theme-btn { font-size:18px; padding:3px 10px; line-height:1; }
+
+/* ── Landing ── */
+#landing {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:48px 24px; gap:20px; min-height:calc(100vh - 46px);
+  position:relative;
+}
+#dropzone {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:12px; width:100%; max-width:460px; padding:48px 24px;
+  border:2px dashed var(--border-light); border-radius:12px;
+  background:var(--bg-surface); cursor:pointer; transition:all .2s;
+}
+#dropzone:hover, #dropzone.over {
+  border-color:var(--blue); background:rgba(74,127,255,0.05);
+}
+#dropzone .icon { font-size:28px; opacity:.45; }
+#dropzone .title { font-family:var(--mono); font-size:13px; font-weight:500; }
+#dropzone .hint  { font-size:12px; color:var(--text-muted); }
+#sample-btn {
+  font-family:var(--mono); font-size:12px;
+  background:none; border:1px solid var(--border-light);
+  color:var(--text-dim); padding:8px 20px; border-radius:4px;
+  cursor:pointer; transition:all .15s;
+}
+#sample-btn:hover { color:var(--green); border-color:var(--green); }
+#err {
+  font-family:var(--mono); font-size:12px; color:#ff6b6b;
+  background:rgba(255,107,107,.08); border:1px solid rgba(255,107,107,.3);
+  border-radius:4px; padding:8px 16px; max-width:460px; text-align:center;
+  display:none;
+}
+.legend { display:flex; gap:20px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
+.leg { display:flex; align-items:center; gap:6px; font-size:11px;
+  color:var(--text-muted); font-family:var(--mono); }
+.leg-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+/* ── Canvas ── */
+#canvas {
+  padding:32px; max-width:860px; width:100%; margin:0 auto;
+  display:none;
+}
+
+/* ── Contributions ── */
+.clist { display:flex; flex-direction:column; gap:8px; }
+.contrib {
+  background:var(--bg-surface); border:1px solid var(--border);
+  border-radius:var(--r); padding:4px; display:flex;
+  flex-direction:column; gap:2px; transition:border-color .15s;
+}
+.contrib:hover { border-color:var(--border-light); }
+
+/* ── Phase blocks ── */
+.phase {
+  padding:8px 12px; border-radius:6px;
+  border-left:3px solid transparent;
+}
+.phase.presentation { background:var(--blue-bg);   border-left-color:var(--blue); }
+.phase.acceptance   { background:var(--green-bg);  border-left-color:var(--green); }
+.phase.continuation { background:var(--orange-bg); border-left-color:var(--orange); }
+
+.phase-head { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+.badge {
+  width:22px; height:22px; border-radius:50%; display:inline-flex;
+  align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:10px; font-weight:600; flex-shrink:0;
+}
+.badge-s { background:rgba(155,143,255,.2); color:var(--purple); border:1px solid rgba(155,143,255,.4); }
+.badge-u { background:rgba(255,143,171,.2); color:var(--pink);   border:1px solid rgba(255,143,171,.4); }
+.badge-x { background:rgba(200,200,200,.1); color:var(--text-dim); border:1px solid var(--border-light); }
+.idx  { font-family:var(--mono); font-size:10px; color:var(--text-muted); }
+.type-tag {
+  font-family:var(--mono); font-size:9px; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase;
+  padding:2px 6px; border-radius:3px; margin-left:auto;
+}
+.phase.presentation .type-tag { color:var(--blue);   background:rgba(74,127,255,.12); }
+.phase.acceptance   .type-tag { color:var(--green);  background:rgba(62,207,142,.12); }
+.phase.continuation .type-tag { color:var(--orange); background:rgba(244,162,97,.12); }
+
+.utt {
+  font-family:var(--mono); font-size:12.5px; color:var(--text-utt);
+  line-height:1.7; padding-left:30px;
+}
+.utt .tag  { color:var(--text-muted); font-style:italic; font-size:11px; }
+.utt .plus { color:var(--orange); font-weight:600; }
+
+/* ── Nested containers ── */
+.nested {
+  display:flex; flex-direction:row;
+  border-radius:var(--r); margin:2px 0; overflow:hidden;
+}
+.nested.presentation { border:1px solid rgba(74,127,255,.25); }
+.nested.acceptance   { border:1px solid rgba(62,207,142,.25); }
+.nested.continuation { border:1px solid rgba(244,162,97,.25); }
+.bracket {
+  flex-shrink:0; width:24px;
+  display:grid;
+  grid-template-rows: 1fr auto 1fr;
+  align-items:center;
+  justify-items:center;
+  padding:8px 0;
+  background:transparent;
+}
+/* Vertical line drawn as two real flex children (line-top, line-bot)
+   so the label sits naturally between them with no overlap */
+.bracket-line {
+  width:2px; border-radius:1px;
+  height:100%; min-height:8px;
+  justify-self:center;
+}
+.nested.presentation > .bracket .bracket-line { background:var(--blue); }
+.nested.acceptance   > .bracket .bracket-line { background:var(--green); }
+.nested.continuation > .bracket .bracket-line { background:var(--orange); }
+
+.bracket-lbl {
+  writing-mode:vertical-rl; transform:rotate(180deg);
+  font-family:var(--mono); font-size:9px; font-weight:600;
+  background:transparent;
+  padding:4px 0;
+  letter-spacing:.12em; text-transform:uppercase;
+}
+.nested.presentation > .bracket > .bracket-lbl { color:var(--blue); }
+.nested.acceptance   > .bracket > .bracket-lbl { color:var(--green); }
+.nested.continuation > .bracket > .bracket-lbl { color:var(--orange); }
+
+/* .bracket gets the same background as its sibling .nested-inner
+   so the label text sits on a matching surface */
+.nested.presentation > .bracket { background:rgba(74,127,255,.04); }
+.nested.acceptance   > .bracket { background:rgba(62,207,142,.04); }
+.nested.continuation > .bracket { background:rgba(244,162,97,.04); }
+
+.nested-inner {
+  flex:1; min-width:0; padding:4px 0 4px 8px;
+  border-radius:var(--r);
+}
+.nested.presentation > .nested-inner { background:rgba(74,127,255,.04); }
+.nested.acceptance   > .nested-inner { background:rgba(62,207,142,.04); }
+.nested.continuation > .nested-inner { background:rgba(244,162,97,.04); }
+/* Bracket column gets same tint as its nested-inner sibling */
+.nested.presentation > .bracket { background:rgba(74,127,255,.04); }
+.nested.acceptance   > .bracket { background:rgba(62,207,142,.04); }
+.nested.continuation > .bracket { background:rgba(244,162,97,.04); }
+.nested-inner .contrib { background:var(--bg-raised); }
+
+/* Light mode: stronger tints so the nesting is visible on white */
+:root.light .nested.presentation > .bracket,
+:root.light .nested.presentation > .nested-inner { background:rgba(26,79,214,.08); }
+:root.light .nested.presentation > .nested-inner { border:1px solid rgba(26,79,214,.22); }
+:root.light .nested.acceptance   > .bracket,
+:root.light .nested.acceptance   > .nested-inner { background:rgba(5,122,82,.08); }
+:root.light .nested.acceptance   > .nested-inner { border:1px solid rgba(5,122,82,.22); }
+:root.light .nested.continuation > .bracket,
+:root.light .nested.continuation > .nested-inner { background:rgba(184,92,0,.08); }
+:root.light .nested.continuation > .nested-inner { border:1px solid rgba(184,92,0,.22); }
+
+
+#app { position:relative; display:flex; flex-direction:column; min-height:100vh; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<header id="header">
+  <h1>Dialog<span>.</span>Viz</h1>
+  <div id="toolbar" style="display:none">
+    <button class="tbtn" id="theme-btn" title="Toggle light/dark mode">✦</button>
+    <span id="fname"></span>
+    <button class="tbtn" id="reset-btn">Load new file</button>
+  </div>
+</header>
+
+<div id="landing">
+  <button id="landing-theme-btn" onclick="
+    var isLight = document.documentElement.classList.toggle('light');
+    this.textContent = isLight ? '☾' : '✦';
+    var tb = document.getElementById('theme-btn');
+    if (tb) tb.textContent = isLight ? '☾' : '✦';
+  " style="position:absolute;top:12px;right:16px;background:none;border:1px solid var(--border-light);color:var(--text-dim);font-size:20px;padding:4px 10px;border-radius:4px;cursor:pointer;line-height:1;">✦</button>
+  <div id="dropzone">
+    <span class="icon">⬡</span>
+    <span class="title">Drop a dialog JSON file</span>
+    <span class="hint">or click to browse</span>
+  </div>
+  <input type="file" id="file-input" accept=".json" style="display:none"/>
+  <span style="font-size:12px;color:var(--text-muted);font-family:var(--mono)">— or —</span>
+  <button id="sample-btn">Load sample dialog</button>
+  <div id="err"></div>
+  <div class="legend">
+    <div class="leg"><span class="leg-dot" style="background:var(--blue)"></span>presentation</div>
+    <div class="leg"><span class="leg-dot" style="background:var(--green)"></span>acceptance</div>
+    <div class="leg"><span class="leg-dot" style="background:var(--orange)"></span>continuation</div>
+    <div class="leg"><span class="leg-dot" style="background:var(--purple)"></span>speaker S</div>
+    <div class="leg"><span class="leg-dot" style="background:var(--pink)"></span>speaker U</div>
+  </div>
+</div>
+
+<div id="canvas"></div>
+
+
+</div>
+
+<script>
+// ── Sample data ──
+
+
+// ── Parser ──
+function parseDialog(raw) {
+  if (!raw || !Array.isArray(raw.phases) || raw.phases.length === 0)
+    throw new Error('Invalid dialog JSON: expected a "phases" array');
+  const TYPES = new Set(['presentation','acceptance','continuation']);
+  function norm(p, path) {
+    if (!TYPES.has(p.type)) throw new Error('Unknown type "' + p.type + '" at ' + path);
+    if (p.nested) {
+      if (!Array.isArray(p.nested_phases) || !p.nested_phases.length)
+        throw new Error('Nested phase at ' + path + ' has no nested_phases');
+      return { nested:true, type:p.type, depth:p.depth||0,
+        nested_phases: p.nested_phases.map((x,i) => norm(x, path+'['+i+']')) };
+    }
+    return { nested:false, idx:p.idx, utterer:p.utterer||'?',
+      utterance:p.utterance, type:p.type, depth:p.depth||0 };
+  }
+  return { phases: raw.phases.map((p,i) => norm(p, i)) };
+}
+
+// ── Tree builder ──
+let _cid = 0;
+function newId() { return 'c'+(++_cid); }
+
+function toNode(p) {
+  if (p.nested) return { kind:'nested', type:p.type, depth:p.depth,
+    children: buildContribs(p.nested_phases) };
+  return { kind:'leaf', idx:p.idx, utterer:p.utterer,
+    utterance:p.utterance, type:p.type, depth:p.depth };
+}
+
+function buildContribs(phases) {
+  const out = [];
+  let i = 0;
+  while (i < phases.length) {
+    const node = toNode(phases[i]);
+    if (node.type === 'presentation') {
+      const c = { id:newId(), pres:node, acc:null };
+      if (i+1 < phases.length) {
+        const next = toNode(phases[i+1]);
+        if (next.type === 'acceptance' || next.type === 'continuation') {
+          c.acc = next; i += 2;
+        } else { i++; }
+      } else { i++; }
+      out.push(c);
+    } else {
+      out.push({ id:newId(), pres:null, acc:node });
+      i++;
+    }
+  }
+  return out;
+}
+
+function buildTree(parsed) {
+  _cid = 0;
+  return { contribs: buildContribs(parsed.phases) };
+}
+
+// ── Renderer ──
+function formatUtt(text) {
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\+/g,'<span class="plus">+</span>')
+    .replace(/&lt;(\w+)&gt;/g,'<span class="tag">&lt;$1&gt;</span>');
+}
+
+function renderLeaf(node) {
+  const div = document.createElement('div');
+  div.className = 'phase ' + node.type;
+  const utterer = (node.utterer||'?').toLowerCase();
+  const badgeCls = utterer==='s' ? 'badge-s' : utterer==='u' ? 'badge-u' : 'badge-x';
+  div.innerHTML =
+    '<div class="phase-head">' +
+      '<span class="badge ' + badgeCls + '">' + (node.utterer||'?').toUpperCase() + '</span>' +
+      '<span class="idx">' + (node.idx||'?') + '</span>' +
+      '<span class="type-tag">' + node.type + '</span>' +
+    '</div>' +
+    '<p class="utt">' + formatUtt(node.utterance||'')+'</p>';
+  return div;
+}
+
+function renderNested(node) {
+  const wrap = document.createElement('div');
+  wrap.className = 'nested ' + node.type;
+  wrap.dataset.depth = node.depth;
+
+  const bracket = document.createElement('div');
+  bracket.className = 'bracket';
+  const lineTop = document.createElement('div');
+  lineTop.className = 'bracket-line';
+  const lbl = document.createElement('span');
+  lbl.className = 'bracket-lbl';
+  lbl.textContent = node.type;
+  const lineBot = document.createElement('div');
+  lineBot.className = 'bracket-line';
+  bracket.appendChild(lineTop);
+  bracket.appendChild(lbl);
+  bracket.appendChild(lineBot);
+
+  const inner = document.createElement('div');
+  inner.className = 'nested-inner';
+  inner.appendChild(renderContribList(node.children));
+
+  wrap.appendChild(bracket);
+  wrap.appendChild(inner);
+  return wrap;
+}
+
+function renderNode(node) {
+  return node.kind === 'nested' ? renderNested(node) : renderLeaf(node);
+}
+
+function renderContrib(c) {
+  const div = document.createElement('div');
+  div.className = 'contrib';
+  div.dataset.id = c.id;
+  if (c.pres) div.appendChild(renderNode(c.pres));
+  if (c.acc)  div.appendChild(renderNode(c.acc));
+  return div;
+}
+
+function renderContribList(contribs) {
+  const div = document.createElement('div');
+  div.className = 'clist';
+  contribs.forEach(c => div.appendChild(renderContrib(c)));
+  return div;
+}
+
+function renderTree(tree, canvas) {
+  canvas.innerHTML = '';
+  canvas.appendChild(renderContribList(tree.contribs));
+}
+
+// ── Error display ──
+function showErr(msg) {
+  const el = document.getElementById('err');
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(function(){ el.style.display='none'; }, 6000);
+}
+
+// ── Load dialog ──
+function loadJson(raw, filename) {
+  try {
+    const parsed = parseDialog(typeof raw === 'string' ? JSON.parse(raw) : raw);
+    const tree = buildTree(parsed);
+
+    document.getElementById('landing').style.display = 'none';
+    const canvas = document.getElementById('canvas');
+    canvas.style.display = 'block';
+    document.getElementById('toolbar').style.display = 'flex';
+    document.getElementById('fname').textContent = filename;
+
+    renderTree(tree, canvas);
+
+
+  } catch(e) {
+    showErr(e.message);
+    console.error(e);
+  }
+}
+
+// ── Upload wiring ──
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  document.getElementById('sample-btn').addEventListener('click', function() {
+    fetch('example.json')
+      .then(function(r) {
+        if (!r.ok) throw new Error('Could not load example.json (HTTP ' + r.status + ')');
+        return r.json();
+      })
+      .then(function(data) { loadJson(data, 'example.json'); })
+      .catch(function(e)   { showErr(e.message); });
+  });
+
+  var fileInput = document.getElementById('file-input');
+  document.getElementById('dropzone').addEventListener('click', function() {
+    fileInput.click();
+  });
+  fileInput.addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) { loadJson(ev.target.result, file.name); };
+    reader.readAsText(file);
+  });
+
+  var dz = document.getElementById('dropzone');
+  dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('over'); });
+  dz.addEventListener('dragleave', function()  { dz.classList.remove('over'); });
+  dz.addEventListener('drop', function(e) {
+    e.preventDefault(); dz.classList.remove('over');
+    var file = e.dataTransfer.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) { loadJson(ev.target.result, file.name); };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('theme-btn').addEventListener('click', function() {
+    var isLight = document.documentElement.classList.toggle('light');
+    document.getElementById('theme-btn').textContent = isLight ? '☾' : '✦';
+    // Also toggle the landing page button visibility
+    var landingTheme = document.getElementById('landing-theme-btn');
+    if (landingTheme) landingTheme.textContent = isLight ? '☾' : '✦';
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', function() {
+    document.getElementById('canvas').style.display = 'none';
+    document.getElementById('canvas').innerHTML = '';
+    document.getElementById('toolbar').style.display = 'none';
+    document.getElementById('landing').style.display = 'flex';
+  });
+});
+</script>
+</body>
+</html>

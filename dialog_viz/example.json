@@ -1,0 +1,402 @@
+{
+    "phases":[
+        {
+            "nested": false,
+            "idx":"utt1",
+            "utterer": "s",
+            "utterance": "hello <sil> can I help you",
+            "depth": 0,
+            "type": "presentation"
+        },
+        {   
+            "nested": false,
+            "idx":"utt2",
+            "utterer": "u",
+            "utterance": "not yet <laughter> <brth> okay <brth> four <sil> four boxcars of oranges <sil> to Bath <sil> so",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {   
+            "nested": false,
+            "idx":"utt3",
+            "utterer": "u",
+            "utterance": "um <sil> once again all the oranges are in Corning I assume + +",
+            "depth": 0,
+            "type": "presentation"
+        }, 
+        {
+            "nested": true,
+            "depth": 0,
+            "type": "acceptance",
+            "nested_phases": [
+                {   
+                    "nested": false,
+                    "idx":"utt4",
+                    "utterer": "s",
+                    "utterance": "+ + + right +",
+                    "depth": 1,
+                    "type": "presentation"
+                }, 
+                {
+                    "nested": false,
+                    "idx":"utt5",
+                    "utterer": "u",
+                    "utterance": "+ okay +",
+                    "depth": 1,
+                    "type": "acceptance"
+                }, 
+                {
+                    "nested": false,
+                    "idx":"utt6",
+                    "utterer": "s",
+                    "utterance": "in in the orange juice <sil> in the orange factory",
+                    "depth": 1,
+                    "type": "acceptance"
+                }
+            ]
+        },
+        {   
+            "nested": true,
+            "depth": 0,
+            "type": "presentation",
+            "nested_phases": [
+                {          
+                    "nested": false,
+                    "idx":"utt7",
+                    "utterer": "u",
+                    "utterance": "okay <sil> um <sil> so I'll take <sil> two boxcars from Elmira to Corning",
+                    "depth": 1,
+                    "type": "acceptance"
+                },
+                {          
+                    "nested": false,
+                    "idx":"utt8",
+                    "utterer": "s",
+                    "utterance": "two boxcars from Elmira <sil> so will you <sil> say engine E two then",
+                    "depth": 1,
+                    "type": "acceptance"
+                },
+                {          
+                    "nested": false,
+                    "idx":"utt9",
+                    "utterer": "u",
+                    "utterance": "uh <sil> do they only need one engine t- for + both of +",
+                    "depth": 1,
+                    "type": "acceptance"
+                },
+                {          
+                    "nested": false,
+                    "idx":"utt10",
+                    "utterer": "s",
+                    "utterance": "+ right + + exactly +",
+                    "depth": 1,
+                    "type": "acceptance"
+                },
+                {          
+                    "nested": false,
+                    "idx":"utt11",
+                    "utterer": "u",
+                    "utterance": "+ okay +",
+                    "depth": 1,
+                    "type": "acceptance"
+                },
+                {          
+                    "nested": false,
+                    "idx":"utt12",
+                    "utterer": "u",
+                    "utterance": "sure",
+                    "depth": 1,
+                    "type": "continuation"
+                }
+            ]
+        },
+        {
+            "nested": false,
+            "idx":"utt13",
+            "utterer": "s",
+            "utterance": "okay <sil> so that holds so two boxcars to Corning so that'll be two a.m.",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {            
+            "nested": false,
+            "idx":"utt14",
+            "utterer": "u",
+            "utterance": "and <sil> the other engine is gonna have to go <sil> actually both en- <sil> all everything at Elmira's gonna have to go like <sil> both engines and both boxcars are gonna have to go to Corning",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {
+            "nested": true,
+            "depth": 0,
+            "type": "acceptance",
+            "nested_phases": [
+                {
+                    "nested": false,
+                    "idx":"utt15",
+                    "utterer": "s",
+                    "utterance": "okay",
+                    "depth": 1,
+                    "type": "presentation"
+                }
+            ]
+        },
+        {
+            "nested": false,
+            "idx":"utt16",
+            "utterer": "u",
+            "utterance": "and then <sil> um <sil> one of the engines will continue to Dansville",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {
+            "nested": true,
+            "depth": 0,
+            "type": "acceptance",
+            "nested_phases": [
+                {
+                    "nested": false,
+                    "idx":"utt17",
+                    "utterer": "s",
+                    "utterance": "okay",
+                    "depth": 1,
+                    "type": "presentation"
+                }
+            ]
+        },
+        {
+            "nested": false,
+            "idx":"utt18",
+            "utterer": "u",
+            "utterance": "and get <sil> two boxcars from there",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {
+            "nested": true,
+            "depth": 0,
+            "type": "acceptance",
+            "nested_phases": [
+                {
+                    "nested": false,
+                    "idx":"utt19",
+                    "utterer": "s",
+                    "utterance": "+ <mumble> +",
+                    "depth": 1,
+                    "type": "presentation"
+                }
+            ]
+        },
+        {
+            "nested": false,
+            "idx":"utt20",
+            "utterer": "u",
+            "utterance": "+ and come + back <sil> to Corning + <laughter> +",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {
+            "nested": false,
+            "idx":"utt21",
+            "utterer": "s",
+            "utterance": "+ n- + okay so let me just figure out what time we'll <sil> get <sil> to <sil> so that'll get to Dansville + at three +",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {
+            "nested": true,
+            "depth": 0,
+            "type": "acceptance",
+            "nested_phases": [
+                {          
+                    "nested": false,
+                    "idx":"utt22",
+                    "utterer": "u",
+                    "utterance": "+ two +",
+                    "depth": 1,
+                    "type": "presentation"
+                },
+                {          
+                    "nested": false,
+                    "idx":"utt23",
+                    "utterer": "u",
+                    "utterance": "three",
+                    "depth": 1,
+                    "type": "continuation"
+                }
+            ]
+        },
+        {
+            "nested": false,
+            "idx":"utt24",
+            "utterer": "s",
+            "utterance": "and then + <sil> back to + Corning at <sil> four",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {
+            "nested": true,
+            "depth": 0,
+            "type": "acceptance",
+            "nested_phases": [
+                {
+                    "nested": false,
+                    "idx":"utt25",
+                    "utterer": "u",
+                    "utterance": "+ four +",
+                    "depth": 1,
+                    "type": "presentation"
+                }
+            ]
+        },
+        {
+            "nested": false,
+            "idx":"utt26",
+            "utterer": "s",
+            "utterance": "okay <sil> so + be four + a.m. and the other one will be there at two a.m.",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {
+            "nested": false,
+            "idx":"utt27",
+            "utterer": "u",
+            "utterance": "+ okay +",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {
+            "nested": false,
+            "idx":"utt28",
+            "utterer": "u",
+            "utterance": "okay and + everything has to <sil> + load up",
+            "depth": 0,
+            "type": "continuation"
+        },
+        {
+            "nested": false,
+            "idx":"utt29",
+            "utterer": "s",
+            "utterance": "+ so that'll have +",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {
+            "nested": false,
+            "idx":"utt30",
+            "utterer": "s",
+            "utterance": "okay so you want <sil> all three boxcars <sil> from Dansville",
+            "depth": 0,
+            "type": "continuation"
+        }, 
+        {
+            "nested": false,
+            "idx":"utt31",
+            "utterer": "u",
+            "utterance": "no just <sil> two",
+            "depth": 0,
+            "type": "acceptance"
+        }, 
+        {
+            "nested": false,
+            "idx":"utt32",
+            "utterer": "s",
+            "utterance": "okay just two of them <sil> okay",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {
+            "nested": true,
+            "depth": 0,
+            "type": "acceptance",
+            "nested_phases": [
+                {
+                    "nested": false,
+                    "idx":"utt33",
+                    "utterer": "u",
+                    "utterance": "two boxcars from Dansville",
+                    "depth": 1,
+                    "type": "presentation"
+                },
+                {
+                    "nested": false,
+                    "idx":"utt34",
+                    "utterer": "s",
+                    "utterance": "okay",
+                    "depth": 1,
+                    "type": "acceptance"
+                }
+            ]
+        },
+        {
+            "nested": false,
+            "idx":"utt35",
+            "utterer": "u",
+            "utterance": "alright <sil> so now there's four boxcars and two engines in Corning",
+            "depth": 0,
+            "type": "acceptance"
+        },
+        {
+            "nested": true,
+            "depth": 0,
+            "type": "acceptance",
+            "nested_phases": [
+                {
+                    "nested": false,
+                    "idx":"utt36",
+                    "utterer": "s",
+                    "utterance": "right",
+                    "depth": 1,
+                    "type": "presentation"
+                }
+            ]
+        }, 
+        {
+            "nested": false,
+            "idx":"utt37",
+            "utterer": "u",
+            "utterance": "they should all load up with oranges",
+            "depth": 0,
+            "type": "acceptance"
+        }, 
+        {
+            "nested": true,
+            "depth": 0,
+            "type": "presentation",
+            "nested_phases": [
+                {
+                    "nested": false,
+                    "idx":"utt38",
+                    "utterer": "s",
+                    "utterance": "okay <sil> so that'll so that two a.m. so <brth> E two will be loaded up by three a.m. and E three will be loaded up by five a.m.",
+                    "depth": 1,
+                    "type": "acceptance"
+                },
+                {
+                    "nested": false,
+                    "idx":"utt39",
+                    "utterer": "u",
+                    "utterance": "okay and then they <sil> go to Bath",
+                    "depth": 1,
+                    "type": "acceptance"
+                }, 
+                {
+                    "nested": false,
+                    "idx":"utt40",
+                    "utterer": "s",
+                    "utterance": "okay so that'll get <sil> there a- so E two will get there at five and the other one will get there at <sil> seven <sil> okay",
+                    "depth": 1,
+                    "type": "acceptance"
+                }
+            ]
+        },
+        {
+            "nested": false,
+            "idx":"utt41",
+            "utterer": "u",
+            "utterance": "okay <sil> I'm <sil> finished",
+            "depth": 0,
+            "type": "acceptance"
+        }
+    ]
+}
