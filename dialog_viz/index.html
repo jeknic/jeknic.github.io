@@ -246,6 +246,60 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
 
 
 #app { position:relative; display:flex; flex-direction:column; min-height:100vh; }
+
+/* ── Split layout ── */
+#main-area {
+  display:flex; flex-direction:row;
+  max-width:1400px; width:100%; margin:0 auto;
+  align-items:flex-start;
+}
+#divider {
+  width:1px; background:var(--border); flex-shrink:0;
+  align-self:stretch; margin:32px 0;
+  display:none;
+}
+#plans-col {
+  width:340px; flex-shrink:0;
+  padding:32px 24px 32px 24px;
+  display:none;
+  position:relative;
+}
+#plans-col-label {
+  font-family:var(--mono); font-size:10px; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase;
+  color:var(--text-muted); margin-bottom:16px;
+}
+
+/* ── Plan box ── */
+.plan-box {
+  position:absolute;
+  left:24px; right:24px;
+  background:var(--bg-surface);
+  border:1px solid var(--border-light);
+  border-radius:var(--r);
+  padding:8px 10px;
+  font-family:var(--mono); font-size:11px;
+}
+.plan-box-idx {
+  font-size:9px; color:var(--text-muted);
+  letter-spacing:.06em; margin-bottom:5px;
+}
+.plan-predicate {
+  display:flex; align-items:baseline; gap:6px;
+  padding:2px 0; color:var(--text-dim); line-height:1.5;
+}
+.plan-predicate-num {
+  font-size:9px; color:var(--text-muted); flex-shrink:0; width:12px; text-align:right;
+}
+.plan-predicate-text {
+  color:var(--text);
+}
+/* connector line from plan box to utterance */
+.plan-connector {
+  position:absolute; right:100%; top:50%;
+  width:24px; height:1px;
+  border-top:1px dashed var(--border-light);
+}
 </style>
 </head>
 <body>
@@ -256,6 +310,8 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
   <div id="toolbar" style="display:none">
     <button class="tbtn" id="theme-btn" title="Toggle light/dark mode">✦</button>
     <span id="fname"></span>
+    <button class="tbtn" id="toolbar-plans-btn">+ Load plans</button>
+    <button class="tbtn" id="toggle-plans-btn" style="display:none">Hide plans</button>
     <button class="tbtn" id="reset-btn">Load new file</button>
   </div>
 </header>
@@ -273,8 +329,18 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
     <span class="hint">or click to browse</span>
   </div>
   <input type="file" id="file-input" accept=".json" style="display:none"/>
+  <input type="file" id="sample-file-input" accept=".json" style="display:none"/>
+  <input type="file" id="plans-input" accept=".csv" style="display:none"/>
   <span style="font-size:12px;color:var(--text-muted);font-family:var(--mono)">— or —</span>
   <button id="sample-btn">Load sample dialog</button>
+  <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+    <button id="plans-btn" style="font-family:var(--mono);font-size:12px;background:none;border:1px solid var(--border-light);color:var(--text-muted);padding:6px 16px;border-radius:4px;cursor:pointer;transition:all .15s;"
+      onmouseover="this.style.color='var(--blue)';this.style.borderColor='var(--blue)'"
+      onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border-light)'">
+      + Load plans (CSV) — optional
+    </button>
+    <span id="plans-loaded-indicator" style="font-family:var(--mono);font-size:11px;color:var(--green);display:none;">✓ plans loaded</span>
+  </div>
   <div id="err"></div>
   <div class="legend">
     <div class="leg"><span class="leg-dot" style="background:var(--blue)"></span>presentation</div>
@@ -285,7 +351,13 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
   </div>
 </div>
 
-<div id="canvas"></div>
+<div id="main-area">
+  <div id="canvas"></div>
+  <div id="divider"></div>
+  <div id="plans-col">
+    <div id="plans-col-label">Committed plans</div>
+  </div>
+</div>
 
 
 </div>
@@ -293,6 +365,26 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
 <script>
 // ── Sample data ──
 
+
+// ── Plans CSV parser ──
+function parsePlansCSV(text) {
+  var plans = {};
+  var lines = text.trim().split('\n');
+  // skip header row if first field is 'idx' (non-numeric)
+  var start = (lines.length > 0 && lines[0].split(';')[0].trim().toLowerCase() === 'idx') ? 1 : 0;
+  for (var i = start; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) continue;
+    var fields = line.split(';');
+    var idx = fields[0].trim();
+    var planStr = (fields[3] || '').trim();
+    if (!idx) continue;
+    // split plan on ' < ' to get individual predicates, filter empty
+    var predicates = planStr ? planStr.split('<').map(function(p){ return p.trim(); }).filter(Boolean) : [];
+    if (predicates.length > 0) plans[idx] = predicates;
+  }
+  return plans; // { utt8: ['attach(boxcar1,e2)', 'move(e2,e,c)'], ... }
+}
 
 // ── Parser ──
 function parseDialog(raw) {
@@ -362,6 +454,7 @@ function formatUtt(text) {
 function renderLeaf(node) {
   const div = document.createElement('div');
   div.className = 'phase ' + node.type;
+  div.dataset.idx = node.idx || '';
   const utterer = (node.utterer||'?').toLowerCase();
   const badgeCls = utterer==='s' ? 'badge-s' : utterer==='u' ? 'badge-u' : 'badge-x';
   div.innerHTML =
@@ -433,11 +526,15 @@ function showErr(msg) {
   setTimeout(function(){ el.style.display='none'; }, 6000);
 }
 
+// ── State ──
+var currentTree = null;
+var currentPlans = null;
+
 // ── Load dialog ──
 function loadJson(raw, filename) {
   try {
     const parsed = parseDialog(typeof raw === 'string' ? JSON.parse(raw) : raw);
-    const tree = buildTree(parsed);
+    currentTree = buildTree(parsed);
 
     document.getElementById('landing').style.display = 'none';
     const canvas = document.getElementById('canvas');
@@ -445,14 +542,113 @@ function loadJson(raw, filename) {
     document.getElementById('toolbar').style.display = 'flex';
     document.getElementById('fname').textContent = filename;
 
-    renderTree(tree, canvas);
-
+    renderTree(currentTree, canvas);
+    if (currentPlans) renderPlans(currentPlans);
 
   } catch(e) {
     showErr(e.message);
     console.error(e);
   }
 }
+
+// ── Load plans ──
+function loadPlans(csvText) {
+  currentPlans = parsePlansCSV(csvText);
+  if (currentTree) renderPlans(currentPlans);
+}
+
+// ── Render plans ──
+function renderPlans(plans) {
+  var col = document.getElementById('plans-col');
+  var divider = document.getElementById('divider');
+  var canvas = document.getElementById('canvas');
+
+  // Remove old plan boxes (keep the label)
+  var old = col.querySelectorAll('.plan-box');
+  old.forEach(function(el){ el.remove(); });
+
+  if (!plans || Object.keys(plans).length === 0) return;
+
+  // Show the column and divider
+  col.style.display = 'block';
+  divider.style.display = 'block';
+  // Canvas takes remaining width
+  canvas.style.flex = '1';
+  canvas.style.minWidth = '0';
+  canvas.style.maxWidth = '';
+
+  // Wait for layout then measure + position
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      positionPlanBoxes(plans);
+    });
+  });
+}
+
+function positionPlanBoxes(plans) {
+  var col = document.getElementById('plans-col');
+  // Always clear existing boxes before redrawing to prevent duplicates
+  col.querySelectorAll('.plan-box').forEach(function(el){ el.remove(); });
+  var colRect = col.getBoundingClientRect();
+  var appRect = document.getElementById('app').getBoundingClientRect();
+
+  Object.keys(plans).forEach(function(idx) {
+    var predicates = plans[idx];
+    // Find the leaf phase element with this idx
+    var phaseEl = document.querySelector('.phase[data-idx="' + idx + '"]');
+    if (!phaseEl) return;
+
+    var phaseRect = phaseEl.getBoundingClientRect();
+    // Convert to position relative to #plans-col
+    var topRelToCol = phaseRect.top - colRect.top + col.scrollTop;
+    // Center vertically on the phase element
+    var box = document.createElement('div');
+    box.className = 'plan-box';
+    box.dataset.idx = idx;
+
+    var idxLabel = document.createElement('div');
+    idxLabel.className = 'plan-box-idx';
+    idxLabel.textContent = idx;
+    box.appendChild(idxLabel);
+
+    predicates.forEach(function(pred, i) {
+      var row = document.createElement('div');
+      row.className = 'plan-predicate';
+      var num = document.createElement('span');
+      num.className = 'plan-predicate-num';
+      num.textContent = (i + 1) + '.';
+      var text = document.createElement('span');
+      text.className = 'plan-predicate-text';
+      text.textContent = pred;
+      row.appendChild(num);
+      row.appendChild(text);
+      box.appendChild(row);
+    });
+
+    // Add connector nub
+    var conn = document.createElement('div');
+    conn.className = 'plan-connector';
+    box.appendChild(conn);
+
+    col.appendChild(box);
+
+    // Position after appending so we can measure box height
+    requestAnimationFrame(function() {
+      var boxH = box.offsetHeight;
+      var phaseH = phaseRect.height;
+      var top = topRelToCol + (phaseH / 2) - (boxH / 2);
+      box.style.top = Math.max(40, top) + 'px';
+    });
+  });
+}
+
+// Reposition on scroll/resize
+window.addEventListener('scroll', function() {
+  if (currentPlans) positionPlanBoxes(currentPlans);
+}, {passive:true});
+window.addEventListener('resize', function() {
+  if (currentPlans) positionPlanBoxes(currentPlans);
+}, {passive:true});
 
 // ── Upload wiring ──
 
@@ -461,14 +657,26 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('sample-btn').addEventListener('click', function() {
     fetch('example.json')
       .then(function(r) {
-        if (!r.ok) throw new Error('Could not load example.json (HTTP ' + r.status + ')');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.json();
       })
       .then(function(data) { loadJson(data, 'example.json'); })
-      .catch(function(e)   { showErr(e.message); });
+      .catch(function() {
+        // fetch blocked (e.g. file:// protocol) — ask user to pick the file manually
+        showErr('Could not load example.json automatically. Please select it using the file picker.');
+        sampleFileInput.click();
+      });
   });
 
   var fileInput = document.getElementById('file-input');
+  var sampleFileInput = document.getElementById('sample-file-input');
+  sampleFileInput.addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) { loadJson(ev.target.result, file.name); };
+    reader.readAsText(file);
+  });
   document.getElementById('dropzone').addEventListener('click', function() {
     fileInput.click();
   });
@@ -492,6 +700,22 @@ document.addEventListener('DOMContentLoaded', function() {
     reader.readAsText(file);
   });
 
+  document.getElementById('plans-btn').addEventListener('click', function() {
+    document.getElementById('plans-input').click();
+  });
+  document.getElementById('plans-input').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      loadPlans(ev.target.result);
+      document.getElementById('plans-loaded-indicator').style.display = 'inline';
+      document.getElementById('plans-btn').textContent = '✓ plans loaded — click to reload';
+      document.getElementById('toggle-plans-btn').style.display = '';
+    };
+    reader.readAsText(file);
+  });
+
   document.getElementById('theme-btn').addEventListener('click', function() {
     var isLight = document.documentElement.classList.toggle('light');
     document.getElementById('theme-btn').textContent = isLight ? '☾' : '✦';
@@ -500,10 +724,42 @@ document.addEventListener('DOMContentLoaded', function() {
     if (landingTheme) landingTheme.textContent = isLight ? '☾' : '✦';
   });
 
+  document.getElementById('toolbar-plans-btn').addEventListener('click', function() {
+    document.getElementById('plans-input').click();
+  });
+
+  var plansVisible = true;
+  document.getElementById('toggle-plans-btn').addEventListener('click', function() {
+    plansVisible = !plansVisible;
+    var col     = document.getElementById('plans-col');
+    var divider = document.getElementById('divider');
+    col.style.display     = plansVisible ? 'block' : 'none';
+    divider.style.display = plansVisible ? 'block' : 'none';
+    document.getElementById('toggle-plans-btn').textContent = plansVisible ? 'Hide plans' : 'Show plans';
+    // Reposition boxes after layout settles
+    if (plansVisible && currentPlans) {
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          positionPlanBoxes(currentPlans);
+        });
+      });
+    }
+  });
+
   document.getElementById('reset-btn').addEventListener('click', function() {
     document.getElementById('canvas').style.display = 'none';
     document.getElementById('canvas').innerHTML = '';
     document.getElementById('toolbar').style.display = 'none';
+    document.getElementById('divider').style.display = 'none';
+    var col = document.getElementById('plans-col');
+    col.style.display = 'none';
+    col.querySelectorAll('.plan-box').forEach(function(el){ el.remove(); });
+    currentTree = null; currentPlans = null;
+    plansVisible = true;
+    document.getElementById('plans-loaded-indicator').style.display = 'none';
+    document.getElementById('plans-btn').textContent = '+ Load plans (CSV) — optional';
+    document.getElementById('toggle-plans-btn').style.display = 'none';
+    document.getElementById('toggle-plans-btn').textContent = 'Hide plans';
     document.getElementById('landing').style.display = 'flex';
   });
 });
