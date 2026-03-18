@@ -650,12 +650,7 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
 
 <!-- ── Mode selector (first screen) ── -->
 <div id="landing">
-  <button id="landing-theme-btn" onclick="
-    var isLight = document.documentElement.classList.toggle('light');
-    this.textContent = isLight ? '☾' : '✦';
-    var tb = document.getElementById('theme-btn');
-    if (tb) tb.textContent = isLight ? '☾' : '✦';
-  " style="position:absolute;top:12px;right:16px;background:none;border:1px solid var(--border-light);color:var(--text-dim);font-size:20px;padding:4px 10px;border-radius:4px;cursor:pointer;line-height:1;">✦</button>
+  
 
   <p style="font-family:var(--mono);font-size:12px;color:var(--text-muted);margin-bottom:8px;">What would you like to visualize?</p>
   <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
@@ -1704,9 +1699,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('theme-btn').addEventListener('click', function() {
     var isLight = document.documentElement.classList.toggle('light');
     document.getElementById('theme-btn').textContent = isLight ? '☾' : '✦';
-    // Also toggle the landing page button visibility
-    var landingTheme = document.getElementById('landing-theme-btn');
-    if (landingTheme) landingTheme.textContent = isLight ? '☾' : '✦';
+
   });
 
   document.getElementById('toolbar-plans-btn').addEventListener('click', function() {
