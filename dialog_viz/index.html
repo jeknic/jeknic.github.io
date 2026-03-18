@@ -67,16 +67,17 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
 /* ── Header ── */
 #header {
   position:sticky; top:0; z-index:50;
-  display:flex; align-items:center; gap:16px;
+  display:flex; align-items:center; gap:12px;
   padding:10px 32px;
   background:var(--header-bg);
   border-bottom:1px solid var(--border);
   backdrop-filter:blur(8px);
 }
+#header #toolbar { margin-left:0; }
 #header h1 { font-family:var(--mono); font-size:13px; font-weight:600;
   letter-spacing:.08em; text-transform:uppercase; }
 #header h1 span { color:var(--blue); }
-#toolbar { display:flex; align-items:center; gap:8px; margin-left:auto; }
+#toolbar { display:flex; align-items:center; gap:8px; }
 #fname { font-family:var(--mono); font-size:11px; color:var(--text-muted); margin-right:8px; }
 .tbtn {
   font-family:var(--mono); font-size:11px; font-weight:500;
@@ -95,6 +96,11 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
   padding:48px 24px; gap:20px; min-height:calc(100vh - 46px);
   position:relative;
 }
+#landing-phases, #landing-plans {
+  flex:1;
+}
+#mode-phases-btn:hover { background:rgba(74,127,255,.15) !important; }
+#mode-plans-btn:hover  { background:rgba(62,207,142,.15) !important; }
 #dropzone {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:12px; width:100%; max-width:460px; padding:48px 24px;
@@ -127,7 +133,7 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
 
 /* ── Canvas ── */
 #canvas {
-  padding:32px; max-width:860px; width:100%; margin:0 auto;
+  padding:32px 32px 32px 32px; max-width:860px; width:100%; margin:0 auto;
   display:none;
 }
 
@@ -247,11 +253,157 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
 
 #app { position:relative; display:flex; flex-direction:column; min-height:100vh; }
 
+/* ── Turn selection ── */
+.utt-row { cursor:pointer; transition:opacity .2s, border-color .2s; }
+.utt-row.selected {
+  border-color: var(--blue) !important;
+  box-shadow: 0 0 0 1px var(--blue);
+}
+.utt-row.grayed {
+  opacity: 0.35;
+}
+
+/* ── Floating plan_complete panel ── */
+#plan-complete-panel {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 200;
+  background: var(--bg-surface);
+  border-top: 2px solid var(--blue);
+  padding: 12px 32px 16px 32px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.25);
+}
+#plan-complete-panel .panel-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px;
+}
+#plan-complete-panel .panel-title {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--blue);
+}
+#plan-complete-panel .panel-idx {
+  font-family: var(--mono); font-size: 10px; color: var(--text-muted);
+}
+#plan-complete-panel .panel-inherited {
+  font-family: var(--mono); font-size: 10px; color: var(--text-muted);
+  font-style: italic; margin-left: auto;
+}
+#plan-complete-panel .panel-close {
+  background: none; border: none; color: var(--text-muted);
+  font-size: 16px; cursor: pointer; padding: 0 4px; margin-left: 8px;
+  line-height: 1; transition: color .15s;
+}
+#plan-complete-panel .panel-close:hover { color: var(--text); }
+#plan-complete-panel .panel-predicates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: stretch;
+  width: 100%;
+}
+#plan-complete-panel .pred-item {
+  font-family: var(--mono); font-size: 12px;
+  background: rgba(74,127,255,.09);
+  border: 1px solid rgba(74,127,255,.25);
+  border-radius: 4px; padding: 3px 10px;
+  color: var(--text);
+}
+#plan-complete-panel .pred-arrow {
+  color: var(--text-muted); font-size: 11px; font-family: var(--mono);
+}
+#plan-complete-panel .panel-empty {
+  font-family: var(--mono); font-size: 12px; color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── CSV mode: utterance list ── */
+.utt-row {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:7px 12px; border-radius:6px;
+  background:var(--bg-surface); border:1px solid var(--border);
+  margin-bottom:4px; transition:border-color .15s;
+}
+.utt-row:hover { border-color:var(--border-light); }
+.utt-row .badge { flex-shrink:0; margin-top:2px; }
+.utt-row .utt-body { flex:1; min-width:0; }
+.utt-row .idx  { font-family:var(--mono); font-size:10px; color:var(--text-muted); margin-bottom:2px; }
+.utt-row .utt  { padding-left:0; }
+
+/* ── Dialog group header ── */
+.dialog-header {
+  font-family:var(--mono); font-size:11px; font-weight:600;
+  color:var(--text-muted); letter-spacing:.08em; text-transform:uppercase;
+  padding:4px 0 8px 0; margin-top:8px; border-bottom:1px solid var(--border);
+  margin-bottom:8px;
+}
+
+/* ── Second plan column (accepted) ── */
+#accepted-col {
+  width:280px; flex-shrink:0;
+  padding:32px 24px 32px 16px;
+  display:none; position:relative;
+}
+#accepted-col-label {
+  font-family:var(--mono); font-size:10px; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase;
+  color:var(--text-muted); margin-bottom:16px;
+}
+#divider2 { width:1px; background:var(--border); flex-shrink:0; align-self:stretch; margin:32px 0; display:none; }
+
+/* Proposed plan boxes — blue tint */
+#plans-col .plan-box {
+  border-color: rgba(74,127,255,.3);
+  background: rgba(74,127,255,.04);
+}
+#plans-col .plan-box .plan-box-idx { color: var(--blue); }
+
+/* Accepted plan boxes — green tint */
+#accepted-col .plan-box {
+  border-color: rgba(62,207,142,.3);
+  background: rgba(62,207,142,.04);
+}
+#accepted-col .plan-box .plan-box-idx { color: var(--green); }
+
+/* CSV mode dropzone */
+#csv-dropzone {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:12px; width:100%; max-width:460px; padding:36px 24px;
+  border:2px dashed var(--border-light); border-radius:12px;
+  background:var(--bg-surface); cursor:pointer; transition:all .2s;
+  margin-top:8px;
+}
+#csv-dropzone:hover, #csv-dropzone.over {
+  border-color:var(--green); background:rgba(62,207,142,.05);
+}
+#csv-dropzone .icon { font-size:28px; opacity:.45; }
+#csv-dropzone .title { font-family:var(--mono); font-size:13px; font-weight:500; }
+#csv-dropzone .hint  { font-size:12px; color:var(--text-muted); }
+
+/* Mode separator */
+.mode-sep {
+  display:flex; align-items:center; gap:12px;
+  width:100%; max-width:460px; margin:4px 0;
+}
+.mode-sep-line { flex:1; height:1px; background:var(--border); }
+.mode-sep-label { font-family:var(--mono); font-size:11px; color:var(--text-muted); }
+
+/* Dropdown selector */
+#dialog-selector-wrap {
+  display:none; align-items:center; gap:8px;
+  margin-right:4px;
+}
+#dialog-selector {
+  font-family:var(--mono); font-size:12px;
+  background:var(--bg-raised); color:var(--text);
+  border:1px solid var(--border-light); border-radius:4px;
+  padding:5px 10px; cursor:pointer;
+}
+
 /* ── Split layout ── */
 #main-area {
   display:flex; flex-direction:row;
   max-width:1400px; width:100%; margin:0 auto;
-  align-items:flex-start;
+  align-items:stretch;
 }
 #divider {
   width:1px; background:var(--border); flex-shrink:0;
@@ -279,11 +431,81 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
   border-radius:var(--r);
   padding:8px 10px;
   font-family:var(--mono); font-size:11px;
+  transition: box-shadow .2s, top .2s ease, transform .15s;
+  z-index: 1;
+  overflow: hidden;
+  /* max-height set dynamically by JS */
+}
+/* Fade-out at bottom when truncated */
+.plan-box.truncated::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40px;
+  background: linear-gradient(transparent, var(--bg-surface));
+  pointer-events: none;
+  border-radius: 0 0 var(--r) var(--r);
+}
+/* "..." button */
+.plan-box-more {
+  position: absolute;
+  bottom: 4px; right: 8px;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-muted); cursor: pointer;
+  background: var(--bg-surface);
+  padding: 0 4px;
+  z-index: 2;
+  line-height: 1.4;
+  display: none;
+}
+.plan-box.truncated .plan-box-more { display: block; }
+/* Expanded state (on hover of the box when truncated) */
+.plan-box.truncated:hover {
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  /* Solid saturated background — covers any overlap */
+  background: var(--box-bg, var(--bg-raised)) !important;
+  border-color: var(--box-border, var(--border-light)) !important;
+  transform: translateX(-2px);
+  transition: box-shadow .2s, transform .15s, top .2s ease;
+  opacity: 1 !important;
+}
+/* Custom scrollbar — hardcoded per theme so pseudo-elements resolve correctly */
+.plan-box-expanded {
+  scrollbar-width: thin;
+  scrollbar-color: #2a3044 #181c27;
+}
+.plan-box-expanded::-webkit-scrollbar { width: 4px; }
+.plan-box-expanded::-webkit-scrollbar-track { background: #181c27; }
+.plan-box-expanded::-webkit-scrollbar-thumb { background: #2a3044; border-radius: 2px; }
+.plan-box-expanded::-webkit-scrollbar-thumb:hover { background: #323a52; }
+/* Light mode override */
+:root.light .plan-box-expanded {
+  scrollbar-color: #c8cdde #ffffff;
+}
+:root.light .plan-box-expanded::-webkit-scrollbar-track { background: #ffffff; }
+:root.light .plan-box-expanded::-webkit-scrollbar-thumb { background: #c8cdde; }
+:root.light .plan-box-expanded::-webkit-scrollbar-thumb:hover { background: #a8afc4; }
+.plan-box.truncated:hover::after { display: none; }
+.plan-box.truncated:hover .plan-box-more { display: none; }
+/* Dim neighbouring boxes when one is expanded */
+.plan-box.dimmed {
+  opacity: 0.15;
+  transition: opacity .15s;
+  pointer-events: none;
+}
+/* Non-truncated hover */
+.plan-box:not(.truncated):hover {
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
 }
 .plan-box-idx {
   font-size:9px; color:var(--text-muted);
   letter-spacing:.06em; margin-bottom:5px;
 }
+/* Legacy predicate rows (kept for JSON+plans mode) */
 .plan-predicate {
   display:flex; align-items:baseline; gap:6px;
   padding:2px 0; color:var(--text-dim); line-height:1.5;
@@ -300,22 +522,133 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
   width:24px; height:1px;
   border-top:1px dashed var(--border-light);
 }
+
+/* ── Column plan rendering (numbered list) ── */
+.col-thread { display:flex; flex-direction:column; gap:1px; margin-bottom:2px; }
+.col-thread-lbl {
+  font-family:var(--mono); font-size:8px; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase;
+  color:var(--text-muted); padding:2px 0 1px 0;
+}
+.col-pred-row {
+  display:flex; align-items:baseline; gap:5px; padding:1px 0;
+}
+.col-pred-num {
+  font-family:var(--mono); font-size:9px; color:var(--text-muted);
+  flex-shrink:0; min-width:14px; text-align:right;
+}
+.plan-pred-item {
+  font-family:var(--mono); font-size:10.5px;
+  color:var(--text); line-height:1.5;
+}
+#accepted-col .plan-pred-item { color:var(--text); }
+.col-scope-group {
+  border-left:2px solid rgba(255,255,255,.12);
+  margin-left:4px; padding-left:6px;
+  display:flex; flex-direction:column; gap:1px;
+}
+.col-inline-parallel {
+  display:flex; flex-direction:column; gap:3px;
+  margin:3px 0;
+}
+.col-inline-thread {
+  display:flex; flex-direction:column; gap:1px;
+  border-left:2px solid rgba(74,127,255,.25);
+  padding-left:5px;
+}
+.panel-inline-parallel {
+  display:flex; flex-direction:row; gap:10px; align-items:flex-start;
+  margin:4px 0; flex-wrap:wrap;
+}
+.panel-inline-thread {
+  display:flex; flex-direction:column; gap:2px; flex:1; min-width:80px;
+  border-left:2px solid rgba(74,127,255,.3);
+  padding-left:8px;
+}
+.panel-scope-group {
+  border-left:2px solid rgba(74,127,255,.3);
+  margin-left:6px; padding-left:8px;
+  display:flex; flex-direction:column; gap:1px;
+}
+.plan-empty { color:var(--text-muted); font-style:italic; font-size:10px; }
+
+/* ── Panel plan rendering (numbered list) ── */
+.panel-thread { display:flex; flex-direction:column; gap:2px; margin-bottom:6px; }
+.panel-thread:last-child { margin-bottom:0; }
+.panel-thread-lbl {
+  font-family:var(--mono); font-size:9px; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted);
+  margin-bottom:2px;
+}
+/* Side-by-side threads in the current-plan panel */
+.panel-threads-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+}
+.panel-thread-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  padding: 0 10px;
+  border-left: 2px solid var(--border);
+  position: relative;
+}
+.panel-thread-col:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+.panel-thread-col .panel-thread-lbl {
+  margin-bottom: 4px;
+}
+.panel-pred-row {
+  display:flex; align-items:baseline; gap:8px; padding:1px 0;
+}
+.panel-pred-num {
+  font-family:var(--mono); font-size:10px; color:var(--text-muted);
+  flex-shrink:0; min-width:18px; text-align:right;
+}
+.pred-item {
+  font-family:var(--mono); font-size:12px; color:var(--text); line-height:1.6;
+}
+.panel-scope-group {
+  border-left:2px solid rgba(74,127,255,.3);
+  margin-left:6px; padding-left:8px;
+  display:flex; flex-direction:column; gap:1px;
+}
+.panel-empty { color:var(--text-muted); font-style:italic; font-size:12px; }
+.pred-arrow { display:none; } /* legacy — no longer used */
 </style>
 </head>
 <body>
 <div id="app">
 
 <header id="header">
-  <h1>Dialog<span>.</span>Viz</h1>
+  <h1 id="logo" style="cursor:pointer;" title="Back to home">Dialog<span>.</span>Viz</h1>
+  <button id="theme-btn" title="Toggle light/dark mode" style="background:none;border:1px solid var(--border-light);color:var(--text-dim);font-size:18px;padding:3px 10px;border-radius:4px;cursor:pointer;line-height:1;margin-left:auto;">✦</button>
   <div id="toolbar" style="display:none">
-    <button class="tbtn" id="theme-btn" title="Toggle light/dark mode">✦</button>
-    <span id="fname"></span>
+    <div id="dialog-selector-wrap" style="display:none">
+      <span style="font-family:var(--mono);font-size:11px;color:var(--text-muted);">Dialog:</span>
+      <select id="dialog-selector"></select>
+    </div>
     <button class="tbtn" id="toolbar-plans-btn">+ Load plans</button>
-    <button class="tbtn" id="toggle-plans-btn" style="display:none">Hide plans</button>
+    <button class="tbtn" id="toggle-proposed-btn" style="display:none">Hide plan</button>
+    <button class="tbtn" id="toggle-accepted-btn" style="display:none">Hide accepted</button>
     <button class="tbtn" id="reset-btn">Load new file</button>
   </div>
 </header>
 
+<!-- Hidden file inputs (always present) -->
+<input type="file" id="file-input" accept=".json" style="display:none"/>
+<input type="file" id="sample-file-input" accept=".json" style="display:none"/>
+<input type="file" id="plans-input" accept=".csv" style="display:none"/>
+<input type="file" id="csv-mode-input" accept=".csv" style="display:none"/>
+
+<!-- ── Mode selector (first screen) ── -->
 <div id="landing">
   <button id="landing-theme-btn" onclick="
     var isLight = document.documentElement.classList.toggle('light');
@@ -323,14 +656,33 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
     var tb = document.getElementById('theme-btn');
     if (tb) tb.textContent = isLight ? '☾' : '✦';
   " style="position:absolute;top:12px;right:16px;background:none;border:1px solid var(--border-light);color:var(--text-dim);font-size:20px;padding:4px 10px;border-radius:4px;cursor:pointer;line-height:1;">✦</button>
+
+  <p style="font-family:var(--mono);font-size:12px;color:var(--text-muted);margin-bottom:8px;">What would you like to visualize?</p>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+    <button id="mode-phases-btn" style="font-family:var(--mono);font-size:13px;font-weight:500;
+      padding:20px 36px;border-radius:var(--r);border:2px solid var(--blue);
+      background:rgba(74,127,255,.07);color:var(--blue);cursor:pointer;transition:all .2s;min-width:160px;">
+      ⬡ Phases
+      <div style="font-size:10px;font-weight:400;color:var(--text-muted);margin-top:6px;">JSON + optional plans CSV</div>
+    </button>
+    <button id="mode-plans-btn" style="font-family:var(--mono);font-size:13px;font-weight:500;
+      padding:20px 36px;border-radius:var(--r);border:2px solid var(--green);
+      background:rgba(62,207,142,.07);color:var(--green);cursor:pointer;transition:all .2s;min-width:160px;">
+      ⬡ Only plans
+      <div style="font-size:10px;font-weight:400;color:var(--text-muted);margin-top:6px;">Combined CSV file</div>
+    </button>
+  </div>
+  <div id="err" style="font-family:var(--mono);font-size:12px;color:#ff6b6b;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:4px;padding:8px 16px;max-width:460px;text-align:center;display:none;"></div>
+</div>
+
+<!-- ── Phases sub-landing ── -->
+<div id="landing-phases" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;gap:20px;min-height:calc(100vh - 46px);position:relative;">
+  <button onclick="showModePicker()" style="position:absolute;top:12px;left:16px;background:none;border:none;color:var(--text-muted);font-family:var(--mono);font-size:12px;cursor:pointer;padding:4px 8px;">← back</button>
   <div id="dropzone">
     <span class="icon">⬡</span>
     <span class="title">Drop a dialog JSON file</span>
     <span class="hint">or click to browse</span>
   </div>
-  <input type="file" id="file-input" accept=".json" style="display:none"/>
-  <input type="file" id="sample-file-input" accept=".json" style="display:none"/>
-  <input type="file" id="plans-input" accept=".csv" style="display:none"/>
   <span style="font-size:12px;color:var(--text-muted);font-family:var(--mono)">— or —</span>
   <button id="sample-btn">Load sample dialog</button>
   <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
@@ -341,7 +693,6 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
     </button>
     <span id="plans-loaded-indicator" style="font-family:var(--mono);font-size:11px;color:var(--green);display:none;">✓ plans loaded</span>
   </div>
-  <div id="err"></div>
   <div class="legend">
     <div class="leg"><span class="leg-dot" style="background:var(--blue)"></span>presentation</div>
     <div class="leg"><span class="leg-dot" style="background:var(--green)"></span>acceptance</div>
@@ -351,14 +702,50 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
   </div>
 </div>
 
+<!-- ── Plans-only sub-landing ── -->
+<div id="landing-plans" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;gap:20px;min-height:calc(100vh - 46px);position:relative;">
+  <button onclick="showModePicker()" style="position:absolute;top:12px;left:16px;background:none;border:none;color:var(--text-muted);font-family:var(--mono);font-size:12px;cursor:pointer;padding:4px 8px;">← back</button>
+  <div id="csv-dropzone">
+    <span class="icon">⬡</span>
+    <span class="title">Drop a combined CSV file</span>
+    <span class="hint">semicolon-separated · predicates separated by &lt; </span>
+  </div>
+  <p style="font-family:var(--mono);font-size:11px;color:var(--text-muted);max-width:460px;text-align:center;line-height:1.7;">
+    Expected columns: <span style="color:var(--text-dim)">file · utt · speaker · utterance · plan_proposed · plan_accepted</span><br/>
+    Extra columns (comment, state, etc.) are ignored.
+  </p>
+  <div id="err2" style="font-family:var(--mono);font-size:12px;color:#ff6b6b;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:4px;padding:8px 16px;max-width:460px;text-align:center;display:none;"></div>
+  <div class="legend">
+    <div class="leg"><span class="leg-dot" style="background:var(--blue)"></span>proposed plan</div>
+    <div class="leg"><span class="leg-dot" style="background:var(--green)"></span>accepted plan</div>
+    <div class="leg"><span class="leg-dot" style="background:var(--purple)"></span>speaker S</div>
+    <div class="leg"><span class="leg-dot" style="background:var(--pink)"></span>speaker U</div>
+  </div>
+</div>
+
 <div id="main-area">
   <div id="canvas"></div>
   <div id="divider"></div>
   <div id="plans-col">
-    <div id="plans-col-label">Committed plans</div>
+    <div id="plans-col-label">Proposed plan</div>
+  </div>
+  <div id="divider2"></div>
+  <div id="accepted-col">
+    <div id="accepted-col-label">Accepted plan</div>
   </div>
 </div>
 
+
+<!-- ── Floating plan_complete panel ── -->
+<div id="plan-complete-panel">
+  <div class="panel-header">
+    <span class="panel-title">Current plan</span>
+    <span class="panel-idx" id="panel-idx"></span>
+    <span class="panel-inherited" id="panel-inherited"></span>
+    <button class="panel-close" id="panel-close">✕</button>
+  </div>
+  <div class="panel-predicates" id="panel-predicates"></div>
+</div>
 
 </div>
 
@@ -366,11 +753,168 @@ html,body { min-height:100vh; background:var(--bg); color:var(--text);
 // ── Sample data ──
 
 
-// ── Plans CSV parser ──
+// ── Plan structure parser ──
+// Parses plan strings handling {} scopes, || parallel, < sequencing
+function splitTopLevel(str, delim) {
+  var parts = [], depth = 0, cur = '', dlen = delim.length;
+  for (var i = 0; i < str.length; i++) {
+    var c = str[i];
+    if (c === '{' || c === '(') depth++;
+    else if (c === '}' || c === ')') depth--;
+    if (depth === 0 && str.slice(i, i+dlen) === delim) {
+      parts.push(cur.trim()); cur = ''; i += dlen - 1;
+    } else { cur += c; }
+  }
+  parts.push(cur.trim());
+  return parts.filter(function(p){ return p !== ''; });
+}
+function parsePlanStep(str) {
+  str = str.trim();
+  if (str[0] === '{' && str[str.length-1] === '}') {
+    var inner = str.slice(1,-1).trim();
+    // Check if inside the scope there are || (parallel sub-threads)
+    var subThreads = splitTopLevel(inner, '||');
+    if (subThreads.length > 1) {
+      // Scoped parallel: { thread1 || thread2 }
+      return { kind:'parallel', threads: subThreads.map(function(t){ return parsePlanSequence(t.trim()); }) };
+    }
+    return { kind:'scope', steps: parsePlanSequence(inner) };
+  }
+  return { kind:'pred', text: str };
+}
+function parsePlanSequence(str) {
+  return splitTopLevel(str, '<').map(parsePlanStep);
+}
+function parsePlan(str) {
+  if (!str || !str.trim()) return null;
+  return splitTopLevel(str, '||').map(function(t){ return parsePlanSequence(t.trim()); });
+}
+// ── Flatten a thread (array of steps) into a numbered list of items ──
+// Each item is either { kind:'pred', text, num } or { kind:'scope', items[], num }
+// Counter is passed by reference as obj.n so nested scopes share the sequence.
+function flattenSteps(steps, counter) {
+  var items = [];
+  steps.forEach(function(step) {
+    if (step.kind === 'parallel') {
+      // Scoped parallel: { t1 || t2 } — each thread gets its own sub-numbering
+      // but they share the same step slot (counter incremented once per thread item)
+      var parallelItem = { kind:'parallel', threads:[] };
+      step.threads.forEach(function(thread) {
+        var subCounter = { n: counter.n }; // each thread starts from current num
+        var threadItems = flattenSteps(thread, subCounter);
+        parallelItem.threads.push(threadItems);
+        // advance outer counter by max steps in any thread
+        counter.n = Math.max(counter.n, subCounter.n);
+      });
+      items.push(parallelItem);
+    } else if (step.kind === 'scope') {
+      // Simple scope: groups sub-steps, numbers continue
+      var scopeItems = flattenSteps(step.steps, counter);
+      items.push({ kind:'scope', items: scopeItems });
+    } else {
+      counter.n++;
+      items.push({ kind:'pred', text: step.text, num: counter.n });
+    }
+  });
+  return items;
+}
+
+// ── Render a flat item list into DOM ──
+function renderFlatItems(items, container, isPanel) {
+  items.forEach(function(item) {
+    if (item.kind === 'parallel') {
+      // Render each parallel thread as a labeled sub-block
+      var parWrap = document.createElement('div');
+      parWrap.className = isPanel ? 'panel-inline-parallel' : 'col-inline-parallel';
+      item.threads.forEach(function(threadItems, ti) {
+        var threadEl = document.createElement('div');
+        threadEl.className = isPanel ? 'panel-inline-thread' : 'col-inline-thread';
+        var lbl = document.createElement('div');
+        lbl.className = isPanel ? 'panel-thread-lbl' : 'col-thread-lbl';
+        lbl.textContent = 'thread ' + (ti + 1);
+        threadEl.appendChild(lbl);
+        renderFlatItems(threadItems, threadEl, isPanel);
+        parWrap.appendChild(threadEl);
+      });
+      container.appendChild(parWrap);
+    } else if (item.kind === 'scope') {
+      var scopeEl = document.createElement('div');
+      scopeEl.className = isPanel ? 'panel-scope-group' : 'col-scope-group';
+      renderFlatItems(item.items, scopeEl, isPanel);
+      container.appendChild(scopeEl);
+    } else {
+      var row = document.createElement('div');
+      row.className = isPanel ? 'panel-pred-row' : 'col-pred-row';
+      var num = document.createElement('span');
+      num.className = isPanel ? 'panel-pred-num' : 'col-pred-num';
+      num.textContent = item.num + '.';
+      var text = document.createElement('span');
+      text.className = isPanel ? 'pred-item' : 'plan-pred-item';
+      text.textContent = item.text;
+      row.appendChild(num);
+      row.appendChild(text);
+      container.appendChild(row);
+    }
+  });
+}
+
+// ── Main entry: render a plan string into container ──
+// Handles top-level || (parallel threads) and delegates to flattenSteps
+function renderPlanThreads(planStr, container, isPanel) {
+  var threads = parsePlan(planStr);
+  if (!threads || threads.length === 0) {
+    var empty = document.createElement('span');
+    empty.className = isPanel ? 'panel-empty' : 'plan-empty';
+    empty.textContent = '—';
+    container.appendChild(empty);
+    return;
+  }
+
+  var multiThread = threads.length > 1;
+
+  if (isPanel && multiThread) {
+    // ── Panel mode: threads side-by-side in a flex row ──
+    var row = document.createElement('div');
+    row.className = 'panel-threads-row';
+    threads.forEach(function(thread, ti) {
+      var col = document.createElement('div');
+      col.className = 'panel-thread-col';
+      var lbl = document.createElement('div');
+      lbl.className = 'panel-thread-lbl';
+      lbl.textContent = 'thread ' + (ti + 1);
+      col.appendChild(lbl);
+      var counter = { n: 0 };
+      var items = flattenSteps(thread, counter);
+      renderFlatItems(items, col, true);
+      row.appendChild(col);
+    });
+    container.appendChild(row);
+  } else {
+    // ── Column / single-thread mode: stacked ──
+    threads.forEach(function(thread, ti) {
+      var threadWrap = document.createElement('div');
+      threadWrap.className = isPanel ? 'panel-thread' : 'col-thread';
+      if (multiThread) {
+        var lbl = document.createElement('div');
+        lbl.className = isPanel ? 'panel-thread-lbl' : 'col-thread-lbl';
+        lbl.textContent = 'thread ' + (ti + 1);
+        threadWrap.appendChild(lbl);
+      }
+      var counter = { n: 0 };
+      var items = flattenSteps(thread, counter);
+      renderFlatItems(items, threadWrap, isPanel);
+      container.appendChild(threadWrap);
+    });
+  }
+}
+
+// Keep renderPlanSteps as a no-op alias (no longer used directly)
+function renderPlanSteps() {}
+
+// ── Plans CSV parser (JSON+CSV mode: idx;utterer;utterance;plan) ──
 function parsePlansCSV(text) {
   var plans = {};
-  var lines = text.trim().split('\n');
-  // skip header row if first field is 'idx' (non-numeric)
+  var lines = text.trim().split('\n').map(function(l){return l.replace(/\r$/, '');});
   var start = (lines.length > 0 && lines[0].split(';')[0].trim().toLowerCase() === 'idx') ? 1 : 0;
   for (var i = start; i < lines.length; i++) {
     var line = lines[i].trim();
@@ -379,11 +923,107 @@ function parsePlansCSV(text) {
     var idx = fields[0].trim();
     var planStr = (fields[3] || '').trim();
     if (!idx) continue;
-    // split plan on ' < ' to get individual predicates, filter empty
     var predicates = planStr ? planStr.split('<').map(function(p){ return p.trim(); }).filter(Boolean) : [];
     if (predicates.length > 0) plans[idx] = predicates;
   }
-  return plans; // { utt8: ['attach(boxcar1,e2)', 'move(e2,e,c)'], ... }
+  return plans;
+}
+
+// ── CSV row parser: handles both comma and semicolon separators + RFC4180 quoting ──
+function detectSeparator(line) {
+  // Count unquoted semicolons vs commas in the first line
+  var semis = 0, commas = 0, inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line[i];
+    if (c === '"') { inQ = !inQ; }
+    else if (!inQ) {
+      if (c === ';') semis++;
+      else if (c === ',') commas++;
+    }
+  }
+  return semis >= commas ? ';' : ',';
+}
+
+function parseCSVRow(line, sep) {
+  var fields = [], cur = '', inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line[i];
+    if (c === '"') {
+      if (inQ && line[i+1] === '"') { cur += '"'; i++; } // escaped quote
+      else inQ = !inQ;
+    } else if (c === sep && !inQ) {
+      fields.push(cur); cur = '';
+    } else {
+      cur += c;
+    }
+  }
+  fields.push(cur);
+  return fields;
+}
+
+// ── Combined CSV parser (CSV-only mode) ──
+// Accepts comma or semicolon separators, RFC4180 quoting, Windows line endings.
+// Extra columns are ignored.
+function parseCombinedCSV(text) {
+  var dialogs = {};
+  // Normalise line endings and filter blank lines
+  var lines = text.trim().split('\n')
+    .map(function(l){ return l.charAt(l.length-1)==='\r' ? l.slice(0,-1) : l; })
+    .filter(function(l){ return l.trim() !== ''; });
+  if (lines.length === 0) return dialogs;
+
+  // Auto-detect separator from header line
+  var sep = detectSeparator(lines[0]);
+
+  // Parse header
+  var headerLine = parseCSVRow(lines[0], sep).map(function(h){ return h.trim().toLowerCase(); });
+  var hasHeader = headerLine.some(function(h){
+    return h === 'file' || h === 'utt' || h === 'idx' || h === 'speaker' || h === 'utterer';
+  });
+  var start = hasHeader ? 1 : 0;
+
+  // Map column names to indices
+  var colFile=-1, colIdx=-1, colSpeaker=-1, colUtt=-1, colProp=-1, colAcc=-1, colComplete=-1;
+  if (hasHeader) {
+    headerLine.forEach(function(h, i) {
+      if (h === 'file')                          colFile     = i;
+      if (h === 'utt' || h === 'idx')            colIdx      = i;
+      if (h === 'speaker' || h === 'utterer')    colSpeaker  = i;
+      if (h === 'utterance')                     colUtt      = i;
+      if (h === 'plan_proposed' || h === 'plan') colProp     = i;
+      if (h === 'plan_accepted')                 colAcc      = i;
+      if (h === 'plan_complete')                 colComplete = i;
+    });
+  }
+  // Positional fallback
+  if (!hasHeader || colIdx === -1) {
+    var hasFile = colFile >= 0;
+    if (hasFile) { colFile=0; colIdx=1; colSpeaker=2; colUtt=3; colProp=4; colAcc=5; }
+    else         { colIdx=0; colSpeaker=1; colUtt=2; colProp=3; colAcc=4; }
+  }
+
+  var defaultFile = 'dialog';
+
+  for (var i = start; i < lines.length; i++) {
+    var f = parseCSVRow(lines[i], sep);
+    var g = function(col){ return col >= 0 && col < f.length ? f[col].trim() : ''; };
+    var file    = g(colFile)    || defaultFile;
+    var idx     = g(colIdx);
+    var speaker = g(colSpeaker);
+    var utt     = g(colUtt);
+    var propStr      = g(colProp);
+    var accStr       = g(colAcc);
+    var completeStr  = g(colComplete);
+    if (!idx) continue;
+    if (!dialogs[file]) dialogs[file] = [];
+    dialogs[file].push({
+      idx: idx, speaker: speaker, utterance: utt,
+      proposed:  propStr     ? propStr.split('<').map(function(p){ return p.trim(); }).filter(Boolean) : [],
+      accepted:  accStr      ? accStr.split('<').map(function(p){ return p.trim(); }).filter(Boolean) : [],
+      complete:  completeStr.trim()  // raw string — parsed on demand
+    });
+  }
+  return dialogs;
 }
 
 // ── Parser ──
@@ -521,14 +1161,243 @@ function renderTree(tree, canvas) {
 
 // ── Error display ──
 function showErr(msg) {
-  const el = document.getElementById('err');
-  el.textContent = msg; el.style.display = 'block';
-  setTimeout(function(){ el.style.display='none'; }, 6000);
+  ['err','err2'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.textContent = msg; el.style.display = 'block';
+      setTimeout(function(){ el.style.display='none'; }, 6000); }
+  });
+  console.error('Dialog error:', msg);
 }
 
 // ── State ──
 var currentTree = null;
 var currentPlans = null;
+var currentMode = 'json'; // 'json' or 'csv'
+var csvDialogs = {};      // parsed combined CSV data
+var currentDialogKey = null;
+var selectedUttIdx = null; // currently selected turn idx
+
+// ── Plan complete helpers ──
+function getCompletePlanAt(rows, idx) {
+  // Find row index for this idx
+  var rowIdx = -1;
+  for (var i = 0; i < rows.length; i++) {
+    if (rows[i].idx === idx) { rowIdx = i; break; }
+  }
+  if (rowIdx === -1) return { planStr: '', fromIdx: null };
+
+  // Walk backward to find most recent non-empty plan_complete
+  var planStr = '';
+  var foundAt = -1;
+  for (var j = rowIdx; j >= 0; j--) {
+    if (rows[j].complete && rows[j].complete.trim() !== '') {
+      planStr = rows[j].complete.trim();
+      foundAt = j;
+      break;
+    }
+  }
+  if (!planStr) return { planStr: '', fromIdx: null };
+
+  // Walk further backward to find the FIRST row that introduced this exact plan
+  // (i.e. where the plan changed to this value)
+  var originIdx = rows[foundAt].idx;
+  for (var k = foundAt - 1; k >= 0; k--) {
+    if (rows[k].complete && rows[k].complete.trim() === planStr) {
+      originIdx = rows[k].idx; // same plan appeared earlier too
+    } else {
+      break; // plan was different (or empty) before this point
+    }
+  }
+
+  return { planStr: planStr, fromIdx: originIdx };
+}
+
+function showPlanPanel(rows, idx) {
+  var result = getCompletePlanAt(rows, idx);
+  var panel = document.getElementById('plan-complete-panel');
+  var predContainer = document.getElementById('panel-predicates');
+  var idxEl = document.getElementById('panel-idx');
+  var inheritedEl = document.getElementById('panel-inherited');
+
+  idxEl.textContent = idx;
+  predContainer.innerHTML = '';
+
+  if (!result.planStr) {
+    var empty = document.createElement('span');
+    empty.className = 'panel-empty';
+    empty.textContent = 'No plan established yet';
+    predContainer.appendChild(empty);
+    inheritedEl.textContent = '';
+  } else {
+    renderPlanThreads(result.planStr, predContainer, true);
+    if (result.fromIdx && result.fromIdx !== idx) {
+      inheritedEl.textContent = 'from ' + result.fromIdx;
+    } else {
+      inheritedEl.textContent = '';
+    }
+  }
+  panel.style.display = 'block';
+}
+
+function hidePlanPanel() {
+  document.getElementById('plan-complete-panel').style.display = 'none';
+}
+
+function applyTurnSelection(idx) {
+  // Highlight selected, gray out subsequent turns
+  var rows = document.querySelectorAll('.utt-row');
+  var found = false;
+  rows.forEach(function(row) {
+    row.classList.remove('selected', 'grayed');
+    if (row.dataset.idx === idx) {
+      row.classList.add('selected');
+      found = true;
+    } else if (found) {
+      row.classList.add('grayed');
+    }
+  });
+}
+
+function clearTurnSelection() {
+  selectedUttIdx = null;
+  document.querySelectorAll('.utt-row').forEach(function(row) {
+    row.classList.remove('selected', 'grayed');
+  });
+  hidePlanPanel();
+}
+
+function handleUttRowClick(idx) {
+  if (selectedUttIdx === idx) {
+    // Clicking selected turn deselects
+    clearTurnSelection();
+  } else {
+    selectedUttIdx = idx;
+    applyTurnSelection(idx);
+    var rows = csvDialogs[currentDialogKey] || [];
+    showPlanPanel(rows, idx);
+  }
+}
+
+// ── CSV mode: render utterance list ──
+function renderCsvUtterances(rows, canvas) {
+  canvas.innerHTML = '';
+  var list = document.createElement('div');
+  list.className = 'clist';
+  rows.forEach(function(row) {
+    var div = document.createElement('div');
+    div.className = 'utt-row';
+    div.dataset.idx = row.idx;
+    div.addEventListener('click', (function(capturedIdx) {
+      return function() { handleUttRowClick(capturedIdx); };
+    })(row.idx));
+    var sp = (row.speaker || '?').toLowerCase();
+    var badgeCls = sp === 's' ? 'badge-s' : sp === 'u' ? 'badge-u' : 'badge-x';
+    var badge = document.createElement('span');
+    badge.className = 'badge ' + badgeCls;
+    badge.textContent = (row.speaker || '?').toUpperCase();
+    var body = document.createElement('div');
+    body.className = 'utt-body';
+    var idxEl = document.createElement('div');
+    idxEl.className = 'idx';
+    idxEl.textContent = row.idx;
+    var uttEl = document.createElement('p');
+    uttEl.className = 'utt';
+    uttEl.innerHTML = formatUtt(row.utterance || '');
+    body.appendChild(idxEl);
+    body.appendChild(uttEl);
+    div.appendChild(badge);
+    div.appendChild(body);
+    list.appendChild(div);
+  });
+  canvas.appendChild(list);
+}
+
+// ── CSV mode: load a specific dialog by key ──
+function loadCsvDialog(key) {
+  clearTurnSelection();
+  currentDialogKey = key;
+  var rows = csvDialogs[key];
+  if (!rows) return;
+
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('landing-phases').style.display = 'none';
+  document.getElementById('landing-plans').style.display = 'none';
+  var canvas = document.getElementById('canvas');
+  canvas.style.display = 'block';
+  canvas.style.flex = '1';
+  canvas.style.minWidth = '0';
+  canvas.style.maxWidth = '';
+  document.getElementById('toolbar').style.display = 'flex';
+  document.getElementById('toolbar-plans-btn').style.display = 'none';
+
+
+  renderCsvUtterances(rows, canvas);
+
+  // Build proposed and accepted plan maps
+  var proposed = {}, accepted = {};
+  rows.forEach(function(row) {
+    if (row.proposed.length) proposed[row.idx] = row.proposed;
+    if (row.accepted.length) accepted[row.idx]  = row.accepted;
+  });
+
+  var hasProposed = Object.keys(proposed).length > 0;
+  var hasAccepted = Object.keys(accepted).length > 0;
+
+  // Show/hide columns
+  var divider  = document.getElementById('divider');
+  var divider2 = document.getElementById('divider2');
+  var plansCol = document.getElementById('plans-col');
+  var accCol   = document.getElementById('accepted-col');
+
+  plansCol.style.display = hasProposed ? 'block' : 'none';
+  divider.style.display  = hasProposed ? 'block' : 'none';
+  accCol.style.display   = hasAccepted ? 'block' : 'none';
+  divider2.style.display = hasAccepted ? 'block' : 'none';
+
+  document.getElementById('toggle-proposed-btn').style.display = hasProposed ? '' : 'none';
+  document.getElementById('toggle-accepted-btn').style.display = hasAccepted ? '' : 'none';
+  document.getElementById('toggle-proposed-btn').textContent = 'Hide proposed';
+  document.getElementById('toggle-accepted-btn').textContent = 'Hide accepted';
+
+  // Update label
+  document.getElementById('plans-col-label').textContent = 'Proposed plan';
+
+  currentPlans = proposed;
+  currentAccepted = accepted;
+
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      positionPlanBoxes(proposed);
+      positionAcceptedBoxes(accepted);
+    });
+  });
+}
+
+// ── CSV mode: load combined CSV ──
+function loadCombinedCSV(text, filename) {
+  try {
+    csvDialogs = parseCombinedCSV(text);
+    var keys = Object.keys(csvDialogs);
+    if (keys.length === 0) { showErr('No dialogs found in CSV.'); return; }
+
+    currentMode = 'csv';
+
+    // Populate dropdown
+    var sel = document.getElementById('dialog-selector');
+    sel.innerHTML = '';
+    keys.forEach(function(k) {
+      var opt = document.createElement('option');
+      opt.value = k; opt.textContent = k;
+      sel.appendChild(opt);
+    });
+    document.getElementById('dialog-selector-wrap').style.display = 'flex';
+
+    loadCsvDialog(keys[0]);
+  } catch(e) {
+    showErr(e.message);
+    console.error(e);
+  }
+}
 
 // ── Load dialog ──
 function loadJson(raw, filename) {
@@ -537,10 +1406,13 @@ function loadJson(raw, filename) {
     currentTree = buildTree(parsed);
 
     document.getElementById('landing').style.display = 'none';
+    document.getElementById('landing-phases').style.display = 'none';
+    document.getElementById('landing-plans').style.display = 'none';
     const canvas = document.getElementById('canvas');
     canvas.style.display = 'block';
     document.getElementById('toolbar').style.display = 'flex';
-    document.getElementById('fname').textContent = filename;
+    document.getElementById('toolbar-plans-btn').style.display = '';
+
 
     renderTree(currentTree, canvas);
     if (currentPlans) renderPlans(currentPlans);
@@ -552,32 +1424,24 @@ function loadJson(raw, filename) {
 }
 
 // ── Load plans ──
-function loadPlans(csvText) {
-  currentPlans = parsePlansCSV(csvText);
-  if (currentTree) renderPlans(currentPlans);
-}
-
-// ── Render plans ──
+// ── Render plans (JSON+plans mode) ──
 function renderPlans(plans) {
-  var col = document.getElementById('plans-col');
+  var col     = document.getElementById('plans-col');
   var divider = document.getElementById('divider');
-  var canvas = document.getElementById('canvas');
+  var canvas  = document.getElementById('canvas');
 
-  // Remove old plan boxes (keep the label)
-  var old = col.querySelectorAll('.plan-box');
-  old.forEach(function(el){ el.remove(); });
-
+  col.querySelectorAll('.plan-box').forEach(function(el){ el.remove(); });
   if (!plans || Object.keys(plans).length === 0) return;
 
-  // Show the column and divider
-  col.style.display = 'block';
+  document.getElementById('plans-col-label').textContent = 'Proposed plan';
+  col.style.display     = 'block';
   divider.style.display = 'block';
-  // Canvas takes remaining width
-  canvas.style.flex = '1';
+  document.getElementById('toggle-proposed-btn').style.display = '';
+  document.getElementById('toggle-proposed-btn').textContent   = 'Hide plan';
+  canvas.style.flex     = '1';
   canvas.style.minWidth = '0';
   canvas.style.maxWidth = '';
 
-  // Wait for layout then measure + position
   requestAnimationFrame(function() {
     requestAnimationFrame(function() {
       positionPlanBoxes(plans);
@@ -585,74 +1449,191 @@ function renderPlans(plans) {
   });
 }
 
-function positionPlanBoxes(plans) {
-  var col = document.getElementById('plans-col');
-  // Always clear existing boxes before redrawing to prevent duplicates
+function loadPlans(csvText) {
+  currentPlans = parsePlansCSV(csvText);
+  if (currentTree) renderPlans(currentPlans);
+}
+
+// ── Accepted plans state ──
+var currentAccepted = null;
+
+// ── Position accepted plan boxes ──
+function positionBoxesInCol(col, plansMap, isAccepted) {
   col.querySelectorAll('.plan-box').forEach(function(el){ el.remove(); });
+  if (!plansMap || Object.keys(plansMap).length === 0) return;
   var colRect = col.getBoundingClientRect();
-  var appRect = document.getElementById('app').getBoundingClientRect();
 
-  Object.keys(plans).forEach(function(idx) {
-    var predicates = plans[idx];
-    // Find the leaf phase element with this idx
-    var phaseEl = document.querySelector('.phase[data-idx="' + idx + '"]');
+  var entries = [];
+  Object.keys(plansMap).forEach(function(idx) {
+    var phaseEl = document.querySelector('.phase[data-idx="' + idx + '"], .utt-row[data-idx="' + idx + '"]');
     if (!phaseEl) return;
-
     var phaseRect = phaseEl.getBoundingClientRect();
-    // Convert to position relative to #plans-col
-    var topRelToCol = phaseRect.top - colRect.top + col.scrollTop;
-    // Center vertically on the phase element
+    var anchorY = phaseRect.top - colRect.top + col.scrollTop + phaseRect.height / 2;
+    entries.push({ idx: idx, predicates: plansMap[idx], anchorY: anchorY, phaseH: phaseRect.height });
+  });
+
+  var isLast = entries.length - 1;
+
+  entries.forEach(function(entry, ei) {
+    var idx        = entry.idx;
+    var predicates = entry.predicates;
+    var anchorY    = entry.anchorY;
+
+    // Progressive above-ratio for hover only
+    var distFromEnd = isLast - ei;
+    var aboveRatio = distFromEnd === 0 ? 0.90
+                   : distFromEnd === 1 ? 0.80
+                   : distFromEnd === 2 ? 0.75
+                   : distFromEnd === 3 ? 0.70
+                   : 0.65;
+
     var box = document.createElement('div');
-    box.className = 'plan-box';
-    box.dataset.idx = idx;
+    box.className      = 'plan-box';
+    box.dataset.idx    = idx;
+    box.dataset.anchor = anchorY;
+    box.dataset.aboveRatio = aboveRatio;
 
     var idxLabel = document.createElement('div');
-    idxLabel.className = 'plan-box-idx';
+    idxLabel.className   = 'plan-box-idx';
     idxLabel.textContent = idx;
     box.appendChild(idxLabel);
 
-    predicates.forEach(function(pred, i) {
-      var row = document.createElement('div');
-      row.className = 'plan-predicate';
-      var num = document.createElement('span');
-      num.className = 'plan-predicate-num';
-      num.textContent = (i + 1) + '.';
-      var text = document.createElement('span');
-      text.className = 'plan-predicate-text';
-      text.textContent = pred;
-      row.appendChild(num);
-      row.appendChild(text);
-      box.appendChild(row);
-    });
+    renderPlanThreads(predicates.join(' < '), box, false);
 
-    // Add connector nub
+    var moreBtn = document.createElement('div');
+    moreBtn.className   = 'plan-box-more';
+    moreBtn.textContent = '···';
+    box.appendChild(moreBtn);
+
     var conn = document.createElement('div');
     conn.className = 'plan-connector';
     box.appendChild(conn);
 
-    col.appendChild(box);
-
-    // Position after appending so we can measure box height
-    requestAnimationFrame(function() {
-      var boxH = box.offsetHeight;
-      var phaseH = phaseRect.height;
-      var top = topRelToCol + (phaseH / 2) - (boxH / 2);
-      box.style.top = Math.max(40, top) + 'px';
+    // ── Hover: expand + shift so box is fully in viewport ──
+    box.addEventListener('mouseenter', function() {
+      if (!this.classList.contains('truncated')) return;
+      var self    = this;
+      // Dim siblings
+      self.parentElement.querySelectorAll('.plan-box').forEach(function(s) {
+        if (s !== self) s.classList.add('dimmed');
+      });
+      // Expand
+      self.style.maxHeight = 'none';
+      var fullH   = Math.min(self.scrollHeight, 56 * 10);
+      self.style.maxHeight = fullH + 'px';
+      self.classList.add('plan-box-expanded');
+      // Position: aboveRatio above anchor
+      var anchor  = parseFloat(self.dataset.anchor);
+      var ratio   = parseFloat(self.dataset.aboveRatio || '0.65');
+      var newTop  = anchor - fullH * ratio;
+      newTop = Math.max(8, newTop);
+      // Clamp bottom to viewport
+      var colTopV = col.getBoundingClientRect().top;
+      var bottomV = colTopV + newTop - col.scrollTop + fullH;
+      var over    = bottomV - (window.innerHeight - 16);
+      if (over > 0) newTop = Math.max(8, newTop - over);
+      self.style.top = newTop + 'px';
     });
+
+    box.addEventListener('mouseleave', function() {
+      this.parentElement.querySelectorAll('.plan-box')
+        .forEach(function(s) { s.classList.remove('dimmed'); });
+      this.classList.remove('plan-box-expanded');
+      this.style.maxHeight = this.dataset.origMaxHeight || '';
+      this.style.top       = this.dataset.origTop;
+    });
+
+    col.appendChild(box);
+    var nextAnchorY = ei + 1 < entries.length ? entries[ei + 1].anchorY : null;
+    var prevAnchorY = ei > 0 ? entries[ei - 1].anchorY : null;
+
+    // ── Position at rest: simply centered on anchor, truncated to gap ──
+    (function(capturedBox, capturedAnchor, capturedNext, capturedPrev) {
+      requestAnimationFrame(function() {
+        // Measure natural height
+        capturedBox.style.maxHeight = 'none';
+        var naturalH = capturedBox.scrollHeight;
+        capturedBox.style.maxHeight = '';
+
+        // Max height = half the gap to the next box + half the gap from the prev box
+        // This ensures boxes centered on their anchors never overlap each other
+        var halfGapNext = capturedNext !== null
+          ? (capturedNext - capturedAnchor) * 0.48  // 48% of forward gap
+          : 200;
+        var halfGapPrev = capturedPrev !== null
+          ? (capturedAnchor - capturedPrev) * 0.48  // 48% of backward gap
+          : 200;
+        // A box centered on anchor uses displayH/2 above and below —
+        // so max is min(halfGapPrev, halfGapNext) * 2
+        var maxH = Math.min(halfGapPrev, halfGapNext) * 2;
+        maxH = Math.min(maxH, 200); // hard cap for sparse dialogs
+        maxH = Math.max(maxH, 40); // always at least 40px
+
+        var isTruncated = naturalH > maxH;
+        var displayH    = isTruncated ? maxH : naturalH;
+
+        if (isTruncated) {
+          capturedBox.classList.add('truncated');
+          capturedBox.style.maxHeight = displayH + 'px';
+        }
+
+        // Center on anchor
+        var top = capturedAnchor - displayH / 2;
+        top = Math.max(8, top);
+
+        capturedBox.style.top             = top + 'px';
+        capturedBox.dataset.origTop       = top + 'px';
+        capturedBox.dataset.origMaxHeight = isTruncated ? displayH + 'px' : '';
+      });
+    })(box, anchorY, nextAnchorY, prevAnchorY);
   });
 }
+
+function positionPlanBoxes(plans) {
+  var col = document.getElementById('plans-col');
+  positionBoxesInCol(col, plans, false);
+}
+
+function positionAcceptedBoxes(plans) {
+  var col = document.getElementById('accepted-col');
+  positionBoxesInCol(col, plans, true);
+}
+
 
 // Reposition on scroll/resize
 window.addEventListener('scroll', function() {
   if (currentPlans) positionPlanBoxes(currentPlans);
+  if (currentAccepted) positionAcceptedBoxes(currentAccepted);
 }, {passive:true});
 window.addEventListener('resize', function() {
   if (currentPlans) positionPlanBoxes(currentPlans);
+  if (currentAccepted) positionAcceptedBoxes(currentAccepted);
 }, {passive:true});
 
 // ── Upload wiring ──
 
+function showModePicker() {
+  document.getElementById('landing').style.display = 'flex';
+  document.getElementById('landing-phases').style.display = 'none';
+  document.getElementById('landing-plans').style.display = 'none';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+
+  // Logo click → back to landing
+  document.getElementById('logo').addEventListener('click', function() {
+    document.getElementById('reset-btn').click();
+  });
+
+  // Mode picker buttons
+  document.getElementById('mode-phases-btn').addEventListener('click', function() {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('landing-phases').style.display = 'flex';
+  });
+  document.getElementById('mode-plans-btn').addEventListener('click', function() {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('landing-plans').style.display = 'flex';
+  });
 
   document.getElementById('sample-btn').addEventListener('click', function() {
     fetch('example.json')
@@ -716,6 +1697,10 @@ document.addEventListener('DOMContentLoaded', function() {
     reader.readAsText(file);
   });
 
+  document.getElementById('panel-close').addEventListener('click', function() {
+    clearTurnSelection();
+  });
+
   document.getElementById('theme-btn').addEventListener('click', function() {
     var isLight = document.documentElement.classList.toggle('light');
     document.getElementById('theme-btn').textContent = isLight ? '☾' : '✦';
@@ -728,21 +1713,55 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('plans-input').click();
   });
 
-  var plansVisible = true;
-  document.getElementById('toggle-plans-btn').addEventListener('click', function() {
-    plansVisible = !plansVisible;
-    var col     = document.getElementById('plans-col');
-    var divider = document.getElementById('divider');
-    col.style.display     = plansVisible ? 'block' : 'none';
-    divider.style.display = plansVisible ? 'block' : 'none';
-    document.getElementById('toggle-plans-btn').textContent = plansVisible ? 'Hide plans' : 'Show plans';
-    // Reposition boxes after layout settles
-    if (plansVisible && currentPlans) {
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-          positionPlanBoxes(currentPlans);
-        });
-      });
+  // ── CSV dropzone wiring ──
+  var csvInput = document.getElementById('csv-mode-input');
+  function handleCsvFile(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) { loadCombinedCSV(ev.target.result, file.name); };
+    reader.readAsText(file);
+  }
+  document.getElementById('csv-dropzone').addEventListener('click', function() { csvInput.click(); });
+  csvInput.addEventListener('change', function(e) { handleCsvFile(e.target.files[0]); });
+  var csvDz = document.getElementById('csv-dropzone');
+  csvDz.addEventListener('dragover', function(e) { e.preventDefault(); csvDz.classList.add('over'); });
+  csvDz.addEventListener('dragleave', function() { csvDz.classList.remove('over'); });
+  csvDz.addEventListener('drop', function(e) {
+    e.preventDefault(); csvDz.classList.remove('over');
+    handleCsvFile(e.dataTransfer.files[0]);
+  });
+
+  // ── Dialog selector ──
+  document.getElementById('dialog-selector').addEventListener('change', function() {
+    loadCsvDialog(this.value);
+  });
+
+  // ── Toggle proposed ──
+  var proposedVisible = true;
+  document.getElementById('toggle-proposed-btn').addEventListener('click', function() {
+    proposedVisible = !proposedVisible;
+    var col = document.getElementById('plans-col');
+    var div = document.getElementById('divider');
+    col.style.display = proposedVisible ? 'block' : 'none';
+    div.style.display = proposedVisible ? 'block' : 'none';
+    var label = currentMode === 'csv' ? 'proposed' : 'plan';
+    this.textContent = proposedVisible ? 'Hide ' + label : 'Show ' + label;
+    if (proposedVisible && currentPlans) {
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ positionPlanBoxes(currentPlans); }); });
+    }
+  });
+
+  // ── Toggle accepted ──
+  var acceptedVisible = true;
+  document.getElementById('toggle-accepted-btn').addEventListener('click', function() {
+    acceptedVisible = !acceptedVisible;
+    var col = document.getElementById('accepted-col');
+    var div = document.getElementById('divider2');
+    col.style.display = acceptedVisible ? 'block' : 'none';
+    div.style.display = acceptedVisible ? 'block' : 'none';
+    this.textContent  = acceptedVisible ? 'Hide accepted' : 'Show accepted';
+    if (acceptedVisible && currentAccepted) {
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ positionAcceptedBoxes(currentAccepted); }); });
     }
   });
 
@@ -754,12 +1773,23 @@ document.addEventListener('DOMContentLoaded', function() {
     var col = document.getElementById('plans-col');
     col.style.display = 'none';
     col.querySelectorAll('.plan-box').forEach(function(el){ el.remove(); });
-    currentTree = null; currentPlans = null;
-    plansVisible = true;
+    clearTurnSelection();
+    currentTree = null; currentPlans = null; currentAccepted = null;
+    currentMode = 'json'; csvDialogs = {}; currentDialogKey = null;
+    proposedVisible = true; acceptedVisible = true;
     document.getElementById('plans-loaded-indicator').style.display = 'none';
     document.getElementById('plans-btn').textContent = '+ Load plans (CSV) — optional';
-    document.getElementById('toggle-plans-btn').style.display = 'none';
-    document.getElementById('toggle-plans-btn').textContent = 'Hide plans';
+    document.getElementById('toggle-proposed-btn').style.display = 'none';
+    document.getElementById('toggle-accepted-btn').style.display = 'none';
+    document.getElementById('toggle-proposed-btn').textContent = 'Hide plan';
+    document.getElementById('toggle-accepted-btn').textContent = 'Hide accepted';
+    document.getElementById('divider2').style.display = 'none';
+    document.getElementById('accepted-col').style.display = 'none';
+    document.getElementById('accepted-col').querySelectorAll('.plan-box').forEach(function(el){ el.remove(); });
+    document.getElementById('dialog-selector-wrap').style.display = 'none';
+    document.getElementById('dialog-selector').innerHTML = '';
+    document.getElementById('landing-phases').style.display = 'none';
+    document.getElementById('landing-plans').style.display = 'none';
     document.getElementById('landing').style.display = 'flex';
   });
 });
